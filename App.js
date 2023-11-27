@@ -6,7 +6,9 @@ export default function App() {
   const handlePress = () => console.log('Text Pressed');
 
   return (
-    <SafeAreaView style={[styles.container, { flexDirection: 'row' }]} o>
+    <SafeAreaView style={[styles.container, { flexDirection: 'row' }, {
+      transform: [{ rotate: '90deg' }],
+    },]} o>
       <Text onPress={handlePress}>She do shit.</Text>
       <TouchableOpacity onPress={() => { console.log('image tapped') }}>
         <Image
