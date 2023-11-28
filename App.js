@@ -1,30 +1,29 @@
-import { StatusBar } from 'expo-status-bar';
-import { TouchableOpacity, TouchableWithoutFeedback, StyleSheet, Text, Image, View, SafeAreaView } from 'react-native';
+import React from 'react';
+import { StyleSheet, View } from 'react-native';
+import PowerBatteryDAQ from './components/PowerBatteryDAQ';
+import SpeedWidget from './components/SpeedWidget';
 
-export default function App() {
-
-  const handlePress = () => console.log('Text Pressed');
-
+const App = () => {
   return (
-    <SafeAreaView style={[styles.container, { flexDirection: 'row' }, {
-      transform: [{ rotate: '90deg' }],
-    },]} o>
-      <Text onPress={handlePress}>She do shit.</Text>
-      <TouchableOpacity onPress={() => { console.log('image tapped') }}>
-        <Image
-          source={{ width: 200, height: 300, uri: 'https://picsum.photos/200/300' }}
-        />
-      </TouchableOpacity>
-      <StatusBar style="auto" />
-    </SafeAreaView>
+    <View
+      style={[
+        styles.container,
+        {
+          flexDirection: 'column',
+        },
+      ]}>
+      <SpeedWidget></SpeedWidget>
+      <PowerBatteryDAQ></PowerBatteryDAQ>
+      <PowerBatteryDAQ></PowerBatteryDAQ>
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 20,
   },
 });
+
+export default App;
