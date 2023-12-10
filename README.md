@@ -53,12 +53,14 @@ Componenets
 There are three main component files, one for each "column" in the mobile application. These are all contained in the "component" folder in the root directory of this repo. All three componenets import three modules from "react-native" library: View, StyleSheet, and Dimesions. 
 
 <img width="388" alt="Screenshot 2023-12-09 at 11 14 24 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/29a396ce-ec68-4e26-9aa9-d976da93d30e">
+
 <img width="288" alt="Screenshot 2023-12-09 at 11 14 42 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/c71699ea-c26a-4296-887e-62bcf1283028">
 
 
 The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It also imports the Text module from "react-native" library and uses an instance of the StylesSheet library to create a circle and customize the look of it. 
 
 <img width="430" alt="Screenshot 2023-12-09 at 11 13 11 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/b2d0341d-253d-4b91-a8f7-3ccda76e3707">
+
 <img width="234" alt="Screenshot 2023-12-09 at 11 13 48 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/8f71485a-3c04-4d46-bc79-f2253bf8ba38">
 
 The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. It displays metrics for power, battery percentage, and connection status to the DAQ. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. 
