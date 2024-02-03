@@ -28,9 +28,14 @@ const styles = StyleSheet.create({
     borderColor: '#A3CFAD',
     borderWidth: 10,
     borderRadius: 20,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 15,
     flex: 2,
+
+    shadowColor: "#000",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 10,
   },
   map: {
     width: '100%',

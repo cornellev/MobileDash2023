@@ -34,11 +34,16 @@ const styles = StyleSheet.create({
     height: width - 10,
     flex: 5,
     borderRadius: 20,
-    marginBottom: 10,
-    marginTop: 10,
+    marginBottom: 15,
+    marginTop: 15,
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
+
+    shadowColor: "#000",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 10,
   },
   speedCircle: {
     position: 'absolute',
@@ -53,6 +58,11 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: '#ff6666',
     right: 10,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 10,
   },
   lapMinCircle: {
     position: 'absolute',
@@ -68,6 +78,11 @@ const styles = StyleSheet.create({
     borderColor: '#ff6666',
     top: 10, 
     left: 10,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
   },
   totalTimeCircle: {
     position: 'absolute',
@@ -83,6 +98,11 @@ const styles = StyleSheet.create({
     borderColor: '#ff6666',
     bottom: 10, 
     left: 10,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
   },
   speedText: {
     fontSize: 120,
