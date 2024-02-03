@@ -12,7 +12,8 @@ export default function PowerBatteryDAQ() {
       <View
         style={styles.powersubdiv}
       >
-        <Text style={styles.daqtext}>DAQ On</Text>
+        <Text style={styles.daqtext}>DAQ</Text>
+        <Text style={styles.unitText}>Connected</Text>
       </View>
 
       {/*View for Battery Percentage*/}
@@ -20,6 +21,7 @@ export default function PowerBatteryDAQ() {
         style={styles.powersubdiv}
       >
         <Text style={styles.batterytext}>75%</Text>
+        <Text style={styles.unitText}>battery</Text>
       </View>
 
       {/*View for Power*/}
