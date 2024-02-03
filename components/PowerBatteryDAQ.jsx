@@ -12,7 +12,7 @@ export default function PowerBatteryDAQ() {
       <View
         style={styles.powersubdiv}
       >
-        <Text style={styles.daqtext}>DAQ Connected</Text>
+        <Text style={styles.daqtext}>DAQ On</Text>
       </View>
 
       {/*View for Battery Percentage*/}
@@ -74,8 +74,9 @@ const styles = StyleSheet.create({
   },
 
   daqtext: {
-    fontSize: 15,
+    fontSize: 26,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
 
   unitText: {
