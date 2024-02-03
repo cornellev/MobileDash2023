@@ -27,7 +27,7 @@ export default function PowerBatteryDAQ() {
         style={styles.powersubdiv}
       >
         <Text style={styles.powertext}>100</Text>
-        <Text style={styles.unitText}>kWh</Text>
+        <Text style={styles.unitText}>kW</Text>
       </View>
     </View>
   )
