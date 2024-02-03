@@ -11,7 +11,7 @@ export default function App() {
         style={styles.map}
         camera={{
           center: {
-            latitude: 39.795669,
+            latitude: 39.794869,
             longitude: -86.234721,
           },
           pitch: 0,
