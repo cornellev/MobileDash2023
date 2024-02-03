@@ -25,6 +25,11 @@ export default function App() {
 
 const styles = StyleSheet.create({
   container: {
+    borderColor: '#A3CFAD',
+    borderWidth: 10,
+    borderRadius: 20,
+    marginTop: 10,
+    marginBottom: 10,
     flex: 2,
   },
   map: {

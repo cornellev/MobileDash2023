@@ -40,14 +40,12 @@ const styles = StyleSheet.create({
     height: width - 10,
     flex: 2,
     borderRadius: 20,
-    marginBottom: 10,
     flexDirection: 'row',
-    columnGap: 10,
     alignItems: 'center',
+    justifyContent: 'space-around',
   },
 
   powersubdiv: {
-    flex: 1,
     borderColor: '#87b1de',
     borderWidth: 5,
     backgroundColor: "white",
