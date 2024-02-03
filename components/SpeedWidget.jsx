@@ -7,9 +7,19 @@ export default function SpeedWidget() {
 
   return (
     <View style={styles.speed}>
-      <View style={styles.circle}>
+      <View style={styles.speedCircle}>
         <Text style={styles.speedText}>10</Text>
-        <Text style={styles.unitText}>mph</Text>
+        <Text style={styles.speedUnitText}>mph</Text>
+
+      </View>
+      <View style={styles.lapMinCircle}>
+        <Text style={styles.smallText}>10:40</Text>
+        <Text style={styles.unitText}>mins/lap</Text>
+
+      </View>
+      <View style={styles.totalTimeCircle}>
+        <Text style={styles.smallText}>12:40</Text>
+        <Text style={styles.unitText}>total mins</Text>
 
       </View>
 
@@ -30,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  circle: {
+  speedCircle: {
     position: 'absolute',
     backgroundColor: 'white',
     width: 250,
@@ -40,15 +50,60 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'column',
     transform: [{ rotate: '90deg' }],
-    borderWidth: 10,
-    borderColor: '#ff6666'
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    right: 10,
+  },
+  lapMinCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 100,
+    height: 100,
+    borderRadius: 100 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    top: 10, 
+    left: 10,
+  },
+  totalTimeCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 100,
+    height: 100,
+    borderRadius: 100 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    bottom: 10, 
+    left: 10,
   },
   speedText: {
-    fontSize: 70,
+    fontSize: 120,
+    fontWeight: 'bold',
+    marginBottom: 0,
+  },
+
+  smallText: {
+    fontSize: 30,
+    marginBottom: 5,
     fontWeight: 'bold',
   },
+
+  speedUnitText: {
+    fontSize: 30,
+    bottom: 10,
+  },
+
   unitText: {
-    fontSize: 20,
-  }
+    fontSize: 10,
+    bottom: 10,
+  },
 
 })
