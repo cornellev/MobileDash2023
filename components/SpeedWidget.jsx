@@ -15,7 +15,7 @@ const startColor = [150, 0, 50]; // Red
 const endColor = [0, 150, 50]; // Green
 
 const maxSpeed = 20;
-const speed = 18; // Need webhook to get this value
+const speed = 20; // Need webhook to get this value
 const speedBarWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 98}%`; // Need to be updating this value on speed value change
 const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
 
@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
   progressBarContainer: {
     position: 'absolute',
     backgroundColor: 'white',
-    width: 120,
+    width: 110,
     height: 10, 
     alignItems: 'center',
     justifyContent: 'center',
@@ -88,8 +88,8 @@ const styles = StyleSheet.create({
   speedCircle: {
     position: 'absolute',
     backgroundColor: 'white',
-    width: 250,
-    height: 250,
+    width: 230,
+    height: 230,
     borderRadius: 250 / 2,
     justifyContent: 'center',
     alignItems: 'center',
