@@ -1,34 +1,64 @@
-import { View, Text, StyleSheet, Dimensions } from "react-native"
-import Svg, { Path } from 'react-native-svg';
-
+import { View, Text, StyleSheet, Dimensions, ProgressBar } from "react-native"
 const { width, height } = Dimensions.get("window");
+
+const interpolateColor = (speed, minSpeed, maxSpeed, startColor, endColor) => {
+  // Calculate ratio of current speed within speed range
+  const ratio = (speed - minSpeed) / (maxSpeed - minSpeed);
+  // Interpolate the red and green components of the color
+  const red = startColor[0] + ratio * (endColor[0] - startColor[0]);
+  const green = startColor[1] + ratio * (endColor[1] - startColor[1]);
+  return `rgb(${Math.round(red)}, ${Math.round(green)}, ${startColor[2]})`;
+};
+
+// Define start (red) and end (green) colors in RGB
+const startColor = [150, 0, 50]; // Red
+const endColor = [0, 150, 50]; // Green
+
+const speed = 15.5; // Need webhook to get this value
+const speedBarWidth = `${(Math.max(0, Math.min(speed, 20)) / 20) * 100}%`; // Need to be updating this value on speed value change
+const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
 
 export default function SpeedWidget() {
 
   return (
     <View style={styles.speed}>
       <View style={styles.speedCircle}>
-        <Text style={styles.speedText}>10</Text>
+        <Text style={styles.speedText}>{Math.floor(speed)}</Text> 
         <Text style={styles.speedUnitText}>mph</Text>
-
       </View>
       <View style={styles.lapMinCircle}>
         <Text style={styles.smallText}>10:40</Text>
         <Text style={styles.unitText}>mins/lap</Text>
-
+      </View>
+      <View style={styles.progressBarContainer}>
+        <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
       </View>
       <View style={styles.totalTimeCircle}>
         <Text style={styles.smallText}>12:40</Text>
         <Text style={styles.unitText}>total mins</Text>
-
       </View>
-
     </View>
-  )
-
-};
+  );
+}
 
 const styles = StyleSheet.create({
+  progressBarContainer: {
+    position: 'absolute',
+    width: '35%',
+    height: 10, 
+    justifyContent: 'center',
+    left: 0,
+    transform: [{ rotate: '90deg' }],
+  },
+  progressBar: {
+    height: '100%',
+    borderRadius: 5, 
+
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+  },
   speed: {
     backgroundColor: "#fad0c3",
     height: width - 10,
