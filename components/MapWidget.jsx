@@ -20,11 +20,11 @@ export default function App() {
         camera={{
           center: {
             latitude: 39.794869,
-            longitude: -86.234721,
+            longitude: -86.234521,
           },
           pitch: 0,
           heading: -91,
-          zoom: 14.5,
+          zoom: 14.4,
         }}
         showsUserLocation={true}
         showsCompass={false}
