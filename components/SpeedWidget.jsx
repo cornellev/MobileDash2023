@@ -35,7 +35,7 @@ export default function SpeedWidget() {
         <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
       </View>
       <View style={styles.totalTimeCircle}>
-        <Text style={styles.smallText}>12:40</Text>
+        <Text style={styles.smallText}>12:55</Text>
         <Text style={styles.unitText}>total mins</Text>
       </View>
     </View>
@@ -45,12 +45,19 @@ export default function SpeedWidget() {
 const styles = StyleSheet.create({
   progressBarContainer: {
     position: 'absolute',
+    backgroundColor: 'white',
     width: 120,
     height: 10, 
     alignItems: 'center',
     justifyContent: 'center',
     left: 0,
     transform: [{ rotate: '90deg' }],
+    borderRadius: 20,
+
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 10,
   },
   progressBar: {
     height: '100%',
@@ -60,7 +67,7 @@ const styles = StyleSheet.create({
     shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 10,
   },
   speed: {
     backgroundColor: "#fad0c3",
