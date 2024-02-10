@@ -15,7 +15,7 @@ const startColor = [150, 0, 50]; // Red
 const endColor = [0, 150, 50]; // Green
 
 const maxSpeed = 20;
-const speed = 20; // Need webhook to get this value
+const speed = 15; // Need webhook to get this value
 const speedBarWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 100}%`; // Need to be updating this value on speed value change
 const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
 
@@ -45,7 +45,7 @@ export default function SpeedWidget() {
 const styles = StyleSheet.create({
   progressBarContainer: {
     position: 'absolute',
-    width: '35%',
+    width: 120,
     height: 10, 
     justifyContent: 'center',
     left: 0,
