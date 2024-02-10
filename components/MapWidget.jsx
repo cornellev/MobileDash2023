@@ -4,6 +4,14 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get("window");
 
+const mapStyle = [
+  {
+    featureType: "all",
+    elementType: "labels",
+    stylers: [{ visibility: "off" }]
+  },
+];
+
 export default function App() {
   return (
     <View style={styles.container}>
@@ -18,6 +26,12 @@ export default function App() {
           heading: -91,
           zoom: 14.5,
         }}
+        showsUserLocation={true}
+        showsCompass={false}
+        scrollEnabled={false} 
+        zoomEnabled={false} 
+        rotateEnabled={false} 
+        customMapStyle={mapStyle} 
       />
     </View>
   );

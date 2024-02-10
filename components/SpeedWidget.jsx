@@ -15,7 +15,7 @@ const startColor = [150, 0, 50]; // Red
 const endColor = [0, 150, 50]; // Green
 
 const maxSpeed = 20;
-const speed = 20; // Need webhook to get this value
+const speed = 18; // Need webhook to get this value
 const speedBarWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 98}%`; // Need to be updating this value on speed value change
 const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
 
@@ -28,14 +28,14 @@ export default function SpeedWidget() {
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
       <View style={styles.lapMinCircle}>
-        <Text style={styles.smallText}>10:40</Text>
+        <Text style={styles.smallText}>10:40</Text> 
         <Text style={styles.unitText}>mins/lap</Text>
       </View>
       <View style={styles.progressBarContainer}>
         <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
       </View>
       <View style={styles.totalTimeCircle}>
-        <Text style={styles.smallText}>12:55</Text>
+        <Text style={styles.smallText}>12:55</Text> 
         <Text style={styles.unitText}>total mins</Text>
       </View>
     </View>
@@ -43,6 +43,22 @@ export default function SpeedWidget() {
 }
 
 const styles = StyleSheet.create({
+  speed: {
+    backgroundColor: "#fad0c3",
+    height: width - 10,
+    flex: 5,
+    borderRadius: 20,
+    marginBottom: 15,
+    marginTop: 15,
+    position: 'relative',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    shadowColor: "#000",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 10,
+  },
   progressBarContainer: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -66,22 +82,6 @@ const styles = StyleSheet.create({
 
     shadowColor: "#000",
     shadowOpacity: 0.8,
-    shadowRadius: 10,
-    elevation: 10,
-  },
-  speed: {
-    backgroundColor: "#fad0c3",
-    height: width - 10,
-    flex: 5,
-    borderRadius: 20,
-    marginBottom: 15,
-    marginTop: 15,
-    position: 'relative',
-    justifyContent: 'center',
-    alignItems: 'center',
-
-    shadowColor: "#000",
-    shadowOpacity: 1,
     shadowRadius: 10,
     elevation: 10,
   },
