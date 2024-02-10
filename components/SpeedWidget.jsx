@@ -14,8 +14,9 @@ const interpolateColor = (speed, minSpeed, maxSpeed, startColor, endColor) => {
 const startColor = [150, 0, 50]; // Red
 const endColor = [0, 150, 50]; // Green
 
-const speed = 15.5; // Need webhook to get this value
-const speedBarWidth = `${(Math.max(0, Math.min(speed, 20)) / 20) * 100}%`; // Need to be updating this value on speed value change
+const maxSpeed = 20;
+const speed = 20; // Need webhook to get this value
+const speedBarWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 100}%`; // Need to be updating this value on speed value change
 const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
 
 export default function SpeedWidget() {
