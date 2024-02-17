@@ -1,10 +1,26 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { StyleSheet, View } from 'react-native';
 import PowerBatteryDAQ from './components/PowerBatteryDAQ';
 import SpeedWidget from './components/SpeedWidget';
 import MapWidget from './components/MapWidget';
+import io from "socket.io-client";
+// IP: 10.48.157.108
 
-const App = () => {
+class App extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      socket: null,
+    }
+  }
+  componentDidMount() { // method used for fetching data from server/third party libraries/
+    const socket = io("http://10.48.157.108:3000");
+    this.setState({ socket });
+    // Your socket connection logic goes here
+  }
+  render(){
+    const{socket} = this.state;
+
   return (
     <View
       style={[
@@ -19,6 +35,7 @@ const App = () => {
     </View>
   );
 };
+}
 
 const styles = StyleSheet.create({
   container: {
