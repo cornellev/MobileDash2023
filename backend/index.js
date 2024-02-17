@@ -1,10 +1,10 @@
-// import TcpSocket from 'react-native-tcp-socket';
+//import TcpSocket from 'react-native-tcp-socket';
 
 
-const express = require("express"); 
+import express from "express"; 
 const app = express(); 
 const server = require("http").createServer(app);
-const { Server } = require("socket.io");
+import { Server } from "socket.io";
 const io = new Server(server);
 const port = 3000; 
 
