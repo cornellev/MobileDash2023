@@ -1,5 +1,9 @@
-import { View, Text, StyleSheet, Dimensions, ProgressBar } from "react-native"
+import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput } from "react-native"
 const { width, height } = Dimensions.get("window");
+import Svg, { Path } from 'react-native-svg';
+import React, {useState, useEffect} from 'react';
+
+
 
 const interpolateColor = (speed, minSpeed, maxSpeed, startColor, endColor) => {
   // Calculate ratio of current speed within speed range
@@ -19,12 +23,34 @@ const speed = 20; // Need to get this value
 const speedBarWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 98}%`; // Need to be updating this value on speed value change
 const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
 
-export default function SpeedWidget() {
+export default function SpeedWidget({socket}) {
+  const [speed, setSpeed] = useState("0"); // initial value
+  const handleSpeedChange = (newSpeed) => {
+    setSpeed(newSpeed);
+  };
+  const updateSpeed=()=> { // for updating speed on client side & emitting to server
+    const serverSpeed = speed; // replace w/ server value got from API call or HTTP request
+    setSpeed(serverSpeed);
+    if (socket) {
+      socket.emit("updateSpeed", {speed: serverSpeed}) // submit event to server
+    }
+  };
+   
+  
 
   return (
     <View style={styles.speed}>
       <View style={styles.speedCircle}>
-        <Text style={styles.speedText}>{Math.floor(speed)}</Text> 
+      <TextInput
+         style={styles.speedText}
+         value = {speed}
+         onSubmitEditing = {() => updateSpeed()}
+         onChangeText = {speed => {
+          handleSpeedChange({speed})
+         }}
+         
+         keyboardType = "numeric"/>
+        {/* <Text style={styles.speedText}>{Math.floor(speed)}</Text>  */}
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
       <View style={styles.lapMinCircle}>
