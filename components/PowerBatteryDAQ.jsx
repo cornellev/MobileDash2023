@@ -45,6 +45,11 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
+
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 10,
   },
 
   powersubdiv: {
@@ -54,19 +59,25 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 100 / 2,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 15,
     marginLeft: 10,
     marginRight: 10,
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '90deg' }],
+
+    shadowColor: "#000",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 5,
   },
 
   powertext: {
     fontSize: 30,
     textAlign: 'center',
     fontWeight: 'bold',
+    shadowColor: "#000",
   },
 
   batterytext: {

@@ -4,6 +4,14 @@ import { StyleSheet, View, Dimensions } from 'react-native';
 
 const { width, height } = Dimensions.get("window");
 
+const mapStyle = [
+  {
+    featureType: "all",
+    elementType: "labels",
+    stylers: [{ visibility: "off" }]
+  },
+];
+
 export default function App() {
   return (
     <View style={styles.container}>
@@ -11,13 +19,19 @@ export default function App() {
         style={styles.map}
         camera={{
           center: {
-            latitude: 39.795669,
-            longitude: -86.234721,
+            latitude: 39.794869,
+            longitude: -86.234521,
           },
           pitch: 0,
           heading: -91,
-          zoom: 14.5,
+          zoom: 14.4,
         }}
+        showsUserLocation={true}
+        showsCompass={false}
+        scrollEnabled={false} 
+        zoomEnabled={false} 
+        rotateEnabled={false} 
+        customMapStyle={mapStyle} 
       />
     </View>
   );
@@ -28,9 +42,14 @@ const styles = StyleSheet.create({
     borderColor: '#A3CFAD',
     borderWidth: 10,
     borderRadius: 20,
-    marginTop: 10,
-    marginBottom: 10,
+    marginTop: 15,
+    marginBottom: 15,
     flex: 2,
+
+    shadowColor: "#000",
+    shadowOpacity: 1,
+    shadowRadius: 10,
+    elevation: 10,
   },
   map: {
     width: '100%',
