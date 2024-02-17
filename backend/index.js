@@ -2,8 +2,10 @@
 
 
 import express from "express"; 
+import http from "http";
+
 const app = express(); 
-const server = require("http").createServer(app);
+const server = http.createServer(app);
 import { Server } from "socket.io";
 const io = new Server(server);
 const port = 3000; 
