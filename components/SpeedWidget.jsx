@@ -19,12 +19,23 @@ const startColor = [150, 0, 50]; // Red
 const endColor = [0, 150, 50]; // Green
 
 const maxSpeed = 20;
-const speed = 20; // Need to get this value
-const speedBarWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 98}%`; // Need to be updating this value on speed value change
-const speedBarColor = interpolateColor(speed, 0, 20, startColor, endColor);
+const speed = 0; // Need to get this value
+const speedBarWidth = `0%`; // Need to be updating this value on speed value change
+const speedBarColor = interpolateColor(speed, 0, maxSpeed, startColor, endColor);
 
 export default function SpeedWidget({socket}) {
   const [speed, setSpeed] = useState("0"); // initial value
+  const [speedBarWidth, setSpeedBarWidth] = useState('0%');
+  const [speedBarColor, setSpeedBarColor] = useState(startColor);
+
+  useEffect(() => { // Update speedBarWidth and speedBarColor
+    const newWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 98}%`;
+    const newColor = interpolateColor(speed, 0, maxSpeed, startColor, endColor);
+    
+    setSpeedBarWidth(newWidth);
+    setSpeedBarColor(newColor);
+  }, [speed]); 
+
   const handleSpeedChange = (newSpeed) => {
     setSpeed(newSpeed);
   };

@@ -11,17 +11,17 @@ const server = http.createServer(app);
 import { Server } from "socket.io";
 const io = new Server(server);
 const port = 3000; 
-console.log("HERLLO");
+console.log("HELLO WORLD");
 io.on("connection", socket => {
     console.log("user connected!!");
 
     socket.on("updateSpeed", (data) => {
         console.log("Speed updated:", data.speed);
-        console.log("speed value changed!!!");
+        console.log("Speed value changed!!!");
         io.emit("speedUpdated", {speed: data.speed});
 
     });
     
 });
 
-server.listen(port, () => console.log("server running on port" + port));
+server.listen(port, () => console.log("server running on port " + port));
