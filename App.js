@@ -12,6 +12,7 @@ class App extends Component {
       socket: null,
     }
   }
+  
   componentDidMount() { // method used for fetching data from server/third party libraries/
     console.log("APP RUN");
     const socket = io(`http://10.0.2.2:3000`); // Need to check if this works on actual device. This refers to localhost for the simulated device
