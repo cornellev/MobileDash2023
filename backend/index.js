@@ -13,7 +13,7 @@ const io = new Server(server);
 const port = 3000; 
 //console.log("HELLO WORLD");
 io.on("connection", socket => {
-    console.log(`User ${socket.id} connected.`);
+    console.log(`User ${socket.handshake.address} connected.`);
 
     socket.on("updateSpeed", (data) => {
         console.log("Speed updated: ", data.speed);
