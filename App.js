@@ -35,14 +35,6 @@ const App = () => {
     const host = "172.20.10.9"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
-    const postData = {
-      speed: 69,
-      voltage: 69,
-      safety: 69,
-      left_rpm: 69,
-      right_rpm: 69,
-    };
-
     console.log('Trying to open a WebSocket connection…');
     const ws = new WebSocket(gateway);
 
