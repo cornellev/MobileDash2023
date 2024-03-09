@@ -81,7 +81,7 @@ const App = () => {
       right_rpm: data["RIGHT RPM"] ? parseFloat(data["RIGHT RPM"]) : null,
     };
 
-    fetch('http://www.live-timing-dash.herokuapp.com/sept_test_table', {
+    fetch('http://live-timing-dash.herokuapp.com/sept_test_table', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
