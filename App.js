@@ -7,6 +7,7 @@ import MapWidget from './components/MapWidget';
 const App = () => {
   const [websocket, setWebsocket] = useState(null);
   const [readings, setReadings] = useState({});
+  const [connectionAttempts, setConnectionAttempts] = useState(0); // New state for tracking connection attempts
 
   useEffect(() => {
     initWebSocket();
@@ -25,6 +26,11 @@ const App = () => {
   };
 
   const initWebSocket = () => {
+    if (connectionAttempts >= 25) { // Check if maximum attempts have been reached
+      console.log("Max connection attempts reached. Not trying to reconnect.");
+      return;
+    }
+
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
     const host = "172.20.10.9"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
@@ -41,10 +47,8 @@ const App = () => {
     ws.onclose = (event) => {
       console.log('Connection closed');
       setWebsocket(null);
-      for (i = 0; i < 25; i++) {
-        setTimeout(initWebSocket, 2000); // Attempt to reconnect 25 times before giving up
-      }
-      console.log('No connection established. Restart app to retry.');
+      setConnectionAttempts(prevAttempts => prevAttempts + 1); // Increment connection attempts
+      setTimeout(initWebSocket, 2000); // Attempt to reconnect
     };
 
     ws.onmessage = (event) => {
@@ -56,7 +60,6 @@ const App = () => {
         console.error("Error parsing JSON:", error);
       }
     };
-    
   };
 
   return (
