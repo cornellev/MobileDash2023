@@ -35,6 +35,14 @@ const App = () => {
     const host = "172.20.10.9"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
+    const postData = {
+      speed: 69,
+      voltage: 69,
+      safety: 69,
+      left_rpm: 69,
+      right_rpm: 69,
+    };
+
     console.log('Trying to open a WebSocket connection…');
     const ws = new WebSocket(gateway);
 
@@ -56,10 +64,37 @@ const App = () => {
       try {
         const myObj = JSON.parse(event.data);
         setReadings(myObj); // Update state with new readings
+        sendDataToServer(myObj); // Send RPM data to server
       } catch (error) {
         console.error("Error parsing JSON:", error);
       }
     };
+  };
+
+  // Function to send data to server
+  const sendDataToServer = (data) => {
+    const postData = {
+      speed: null,
+      voltage: null,
+      safety: null,
+      left_rpm: data["LEFT RPM"] ? parseFloat(data["LEFT RPM"]) : null,
+      right_rpm: data["RIGHT RPM"] ? parseFloat(data["RIGHT RPM"]) : null,
+    };
+
+    fetch('http://www.live-timing-dash.herokuapp.com/sept_test_table', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Success:', data);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
   };
 
   return (
