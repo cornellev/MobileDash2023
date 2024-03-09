@@ -32,7 +32,7 @@ const App = () => {
     }
 
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
-    const host = "172.20.10.9"; // Use your server's hostname or IP
+    const host = "192.168.34.24"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');

@@ -80,8 +80,6 @@ export default function SpeedWidget({readings}) {
     // setLapData((prevLapData) => [...prevLapData, totalTime]);
     setLapTime(0);
     setLapCount((prevLapCount) => prevLapCount + 1);
-  
-    
   };
 
   const handleTotalTimePress = (time) => {
@@ -103,8 +101,6 @@ export default function SpeedWidget({readings}) {
     return milesPerHour;
   }
 
-
-
 };
 useEffect(() => {
   console.log(totalTimeData);
@@ -114,16 +110,7 @@ useEffect(() => {
   return (
     <View style={styles.speed}>
       <View style={styles.speedCircle}>
-      <TextInput
-         style={styles.speedText}
-         value = {speed}
-         onSubmitEditing = {() => updateSpeed()}
-         onChangeText = {speed => {
-          handleSpeedChange({speed})
-         }}
-         
-         keyboardType = "numeric"/>
-        {/* <Text style={styles.speedText}>{Math.floor(speed)}</Text>  */}
+        <Text style={styles.speedText}>{Math.round(speed)}</Text>
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
 
