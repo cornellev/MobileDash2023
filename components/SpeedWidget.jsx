@@ -46,7 +46,7 @@ export default function SpeedWidget({readings}) {
       // Check for NaN and use 0 instead
       calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
       // Round to nearest integer
-      calculatedSpeed = Math.round(calculatedSpeed);
+      //calculatedSpeed = Math.round(calculatedSpeed);
       
       setSpeed(calculatedSpeed.toString()); // Convert to string for the TextInput value
       
@@ -96,16 +96,7 @@ export default function SpeedWidget({readings}) {
   return (
     <View style={styles.speed}>
       <View style={styles.speedCircle}>
-      <TextInput
-         style={styles.speedText}
-         value = {speed}
-         onSubmitEditing = {() => updateSpeed()}
-         onChangeText = {speed => {
-          handleSpeedChange({speed})
-         }}
-         
-         keyboardType = "numeric"/>
-        {/* <Text style={styles.speedText}>{Math.floor(speed)}</Text>  */}
+        <Text style={styles.speedText}>{Math.round(speed)}</Text> 
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
       <View style={styles.lapMinCircle}>
