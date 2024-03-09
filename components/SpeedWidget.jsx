@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput, TouchableOp
 const { width, height } = Dimensions.get("window");
 import Svg, { Path } from 'react-native-svg';
 import React, {useState, useEffect} from 'react';
-import { Stopwatch, Timer } from 'react-native-stopwatch-timer'
+import { Stopwatch } from 'react-native-stopwatch-timer'
 
 
 
@@ -52,27 +52,45 @@ export default function SpeedWidget({socket}) {
   // stopwatch implementation 
   const [lapTime, setLapTime] = useState(0);
   const [lapData, setLapData] = useState([]);
+  const [totalTimeData, setTimeData] = useState([]);
   const [totalTime, setTotalTime] = useState(0);
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [resetStopwatch, setResetStopwatch] = useState(false);
+  const [lapCounter, setLapCount] = useState(0);
 
+  useEffect(() => {
+    console.log(lapData);
+  }, [lapData]
+  );
 
   const handleLapPress = () => {
     // Save the lap time and reset the stopwatch
     setLapTime(lapTime + totalTime);
     //setResetStopwatch(true);
+    setLapData((prevLapData) => [...prevLapData, lapTime + totalTime]);
+    // setLapData((prevLapData) => [...prevLapData, totalTime]);
+    setLapTime(0);
+    setLapCount((prevLapCount) => prevLapCount + 1);
+  
+    
   };
 
   const handleTotalTimePress = (time) => {
     setIsStopwatchStart(!isStopwatchStart);
-  if (!isStopwatchStart) {
-    // If Stopwatch is stopping, reset should be false
-    setResetStopwatch(false);
+    if (!isStopwatchStart) {
+      // If Stopwatch is stopping, reset should be false
+      setResetStopwatch(false);
+      // console.log("Resetting lap count");
+      setLapCount(0);
+      setTimeData((prevTotal) => [...prevTotal, totalTime]);
+      setTotalTime(0);
+      setLapData([]);
   }
 };
-
-   
-  
+useEffect(() => {
+  console.log(totalTimeData);
+}, [totalTimeData]
+);
 
   return (
     <View style={styles.speed}>
@@ -80,46 +98,56 @@ export default function SpeedWidget({socket}) {
       <TextInput
          style={styles.speedText}
          value = {speed}
-         onSubmitEditing = {() => updateSpeed()}
-         onChangeText = {speed => {
-          handleSpeedChange({speed})
-         }}
+        //  onSubmitEditing = {() => updateSpeed()}
+        //  onChangeText = {speed => {
+        //   handleSpeedChange({speed})
+        //  }}
          
          keyboardType = "numeric"/>
         {/* <Text style={styles.speedText}>{Math.floor(speed)}</Text>  */}
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
+
+      <View style={styles.lapCountCircle}>
+        <Text style={styles.smallText}></Text> 
+       
+
+      </View>
       <View style={styles.lapMinCircle}>
-        <Text style={styles.smallText}>10:40</Text> 
-        <Text style={styles.unitText}>mins/lap</Text>
+        <Text style={styles.smallText}></Text> 
+
+
       </View>
       <View style={styles.progressBarContainer}>
         <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
       </View>
       <View style={styles.totalTimeCircle}>
-        {/* <Text style={styles.smallText}>12:55</Text>  */}
-        {/* <Text style={styles.unitText}>total mins</Text> */}
       </View>
       
       <TouchableOpacity onPress={handleLapPress} style={styles.lapMinCircle}>
-        {/* <Text style={styles.smallText}>{formatTime(lapTime)}</Text> */}
-        <Text style={styles.unitText}>Lap</Text>
+        {/* <Text style={styles.unitText}>{formatTime(lapTime + totalTime)}</Text> */}
+        <Text style={[styles.unitText, { fontSize: 13, bottom:5 }]}>{lapData.length > 0 ? lapData[lapData.length - 1]  : ""}</Text>
+        <Text style={[styles.unitText, { fontSize: 20, marginBottom: 0 }]}>Lap {lapCounter}</Text>
+        
+
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleTotalTimePress} style={styles.totalTimeCircle}>
-        <Text style={styles.smallText}>{formatTime(totalTime)}</Text>
+        <Text style={styles.smallText}>{}</Text>
         {isStopwatchStart ? (
           <Stopwatch
             laps
             msecs
-            start
+            start={isStopwatchStart}
             reset={resetStopwatch}
-            getTime={(time) => setTotalTime(time)}
+            getTime={(time) => setTotalTime(time)} 
             options={options}
           />
         ) : null}
-        <Text style={styles.unitText}>{isStopwatchStart ? "Reset" : "Start"}</Text>
+        <Text style={[styles.unitText, { fontSize: 20,  marginBottom: 0 }]}>{isStopwatchStart ? "Reset" : "Start"}</Text>
       </TouchableOpacity>
+
+    
 
     </View>
   );
@@ -144,11 +172,11 @@ const formatTime = (time) => {
   const sec = Math.floor(time / 1000);
   const min = Math.floor(sec / 60);
   const hr = Math.floor(min / 60);
+  const milliseconds = time % 1000;
 
-  const formattedTime = `${pad(hr)}:${pad(min % 60)}:${pad(sec % 60)}`;
+  const formattedTime = `${pad(hr)}:${pad(min % 60)}:${pad(sec % 60)}.${pad(milliseconds)}`;
   return formattedTime;
 };
-
 const pad = (num) => (num < 10 ? `0${num}` : num.toString());
 
 const styles = StyleSheet.create({
@@ -213,6 +241,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
+
   lapMinCircle: {
     position: 'absolute',
     backgroundColor: 'white',
