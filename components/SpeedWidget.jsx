@@ -24,30 +24,39 @@ const speed = 20; // Need to get this value
 const speedBarWidth = `0%`; // Need to be updating this value on speed value change
 const speedBarColor = interpolateColor(speed, 0, maxSpeed, startColor, endColor);
 
-export default function SpeedWidget({socket}) {
+const PI = 3.1415926536;
+const wheelDiameter = 22.42; // inches
+
+export default function SpeedWidget({rpmReadings}) {
   // speedometer 
   const [speed, setSpeed] = useState("0"); // initial value
   const [speedBarWidth, setSpeedBarWidth] = useState('0%');
   const [speedBarColor, setSpeedBarColor] = useState(startColor);
 
-  useEffect(() => { // Update speedBarWidth and speedBarColor
-    const newWidth = `${(Math.max(0, Math.min(speed, maxSpeed)) / maxSpeed) * 98}%`;
-    const newColor = interpolateColor(speed, 0, maxSpeed, startColor, endColor);
-    
-    setSpeedBarWidth(newWidth);
-    setSpeedBarColor(newColor);
-  }, [speed]); 
-
-  const handleSpeedChange = (newSpeed) => {
-    setSpeed(newSpeed);
-  };
-  const updateSpeed=()=> { // for updating speed on client side & emitting to server
-    const serverSpeed = speed; // replace w/ server value got from API call or HTTP request
-    setSpeed(serverSpeed);
-    if (socket) {
-      socket.emit("updateSpeed", {speed: serverSpeed}) // submit event to server
+  useEffect(() => {
+    const calcSpeed = (leftRPM, rightRPM, diameter) => {
+      let avgRPM = (parseFloat(leftRPM) + parseFloat(rightRPM)) / 2;
+      let inchesPerMin = diameter * PI * avgRPM;
+      let milesPerHour = inchesPerMin * (60.0 / 63360.0);
+      return milesPerHour;
+    };
+  
+    if (rpmReadings) {
+      let calculatedSpeed = calcSpeed(rpmReadings['LEFT RPM'], rpmReadings['RIGHT RPM'], wheelDiameter);
+      // Check for NaN and use 0 instead
+      calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
+      // Round to nearest integer
+      calculatedSpeed = Math.round(calculatedSpeed);
+      
+      setSpeed(calculatedSpeed.toString()); // Convert to string for the TextInput value
+      
+      const newWidth = `${(Math.max(0, Math.min(calculatedSpeed, maxSpeed)) / maxSpeed) * 98}%`;
+      const newColor = interpolateColor(calculatedSpeed, 0, maxSpeed, startColor, endColor);
+      setSpeedBarWidth(newWidth);
+      setSpeedBarColor(newColor);
     }
-  };
+  }, [rpmReadings]);
+  
 
   // stopwatch implementation 
   const [lapTime, setLapTime] = useState(0);
@@ -69,6 +78,16 @@ export default function SpeedWidget({socket}) {
     // If Stopwatch is stopping, reset should be false
     setResetStopwatch(false);
   }
+
+  function calcSpeed(leftRPM, rightRPM, diameter) {
+    let avgRPM = (leftRPM + rightRPM) / 2;
+    let inchesPerMin = diameter * PI * avgRPM;
+    let milesPerHour = inchesPerMin * (60.0 / 63360.0);
+    return milesPerHour;
+  }
+
+
+
 };
 
    
