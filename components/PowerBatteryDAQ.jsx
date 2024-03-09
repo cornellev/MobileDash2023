@@ -3,37 +3,45 @@ import { View, Text, StyleSheet, Dimensions } from "react-native"
 
 const { width, height } = Dimensions.get("window");
 
-export default function PowerBatteryDAQ() {
+export default function PowerBatteryDAQ({ readings }) {
+  // State to manage DAQ connection status and temperature
+  const [connectionStatus, setConnectionStatus] = useState('Disconnected');
+  const [temperature, setTemperature] = useState('N/A');
+
+  useEffect(() => {
+    // Update connection status based on WebSocket connection
+    if (readings && Object.keys(readings).length > 0) {
+      setConnectionStatus('Connected');
+      // Assuming the JSON object has a key 'temperature' for temperature data
+      if (readings.temperature) {
+        setTemperature(readings.temperature);
+      }
+    } else {
+      setConnectionStatus('Disconnected');
+    }
+  }, [readings]);
 
   return (
     <View style={styles.power}>
-
       {/*View for DAQ Connection Status*/}
-      <View
-        style={styles.powersubdiv}
-      >
+      <View style={styles.powersubdiv}>
         <Text style={styles.daqtext}>DAQ</Text>
-        <Text style={styles.unitText}>Connected</Text>
+        <Text style={styles.unitText}>{connectionStatus}</Text>
       </View>
 
-      {/*View for Battery Percentage*/}
-      <View
-        style={styles.powersubdiv}
-      >
+      {/*View for Battery Percentage (Static for now)*/}
+      <View style={styles.powersubdiv}>
         <Text style={styles.batterytext}>75%</Text>
         <Text style={styles.unitText}>battery</Text>
       </View>
 
-      {/*View for Power*/}
-      <View
-        style={styles.powersubdiv}
-      >
-        <Text style={styles.powertext}>100</Text>
-        <Text style={styles.unitText}>kW</Text>
+      {/*View for Temperature*/}
+      <View style={styles.powersubdiv}>
+        <Text style={styles.powertext}>{temperature}</Text>
+        <Text style={styles.unitText}>ºF</Text>
       </View>
     </View>
-  )
-
+  );
 };
 
 const styles = StyleSheet.create({

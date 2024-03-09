@@ -70,8 +70,8 @@ const App = () => {
           flexDirection: 'column',
         },
       ]}>
-      <SpeedWidget rpmReadings={readings}></SpeedWidget>
-      <PowerBatteryDAQ></PowerBatteryDAQ>
+      <SpeedWidget readings={readings}></SpeedWidget>
+      <PowerBatteryDAQ readings={readings}></PowerBatteryDAQ>
       <MapWidget></MapWidget>
     </View>
   );

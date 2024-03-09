@@ -27,7 +27,7 @@ const speedBarColor = interpolateColor(speed, 0, maxSpeed, startColor, endColor)
 const PI = 3.1415926536;
 const wheelDiameter = 22.42; // inches
 
-export default function SpeedWidget({rpmReadings}) {
+export default function SpeedWidget({readings}) {
   // speedometer 
   const [speed, setSpeed] = useState("0"); // initial value
   const [speedBarWidth, setSpeedBarWidth] = useState('0%');
@@ -41,8 +41,8 @@ export default function SpeedWidget({rpmReadings}) {
       return milesPerHour;
     };
   
-    if (rpmReadings) {
-      let calculatedSpeed = calcSpeed(rpmReadings['LEFT RPM'], rpmReadings['RIGHT RPM'], wheelDiameter);
+    if (readings) {
+      let calculatedSpeed = calcSpeed(readings['LEFT RPM'], readings['RIGHT RPM'], wheelDiameter);
       // Check for NaN and use 0 instead
       calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
       // Round to nearest integer
@@ -55,7 +55,7 @@ export default function SpeedWidget({rpmReadings}) {
       setSpeedBarWidth(newWidth);
       setSpeedBarColor(newColor);
     }
-  }, [rpmReadings]);
+  }, [readings]);
   
 
   // stopwatch implementation 
