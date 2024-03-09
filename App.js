@@ -41,14 +41,22 @@ const App = () => {
     ws.onclose = (event) => {
       console.log('Connection closed');
       setWebsocket(null);
-      setTimeout(initWebSocket, 2000); // Attempt to reconnect
+      for (i = 0; i < 25; i++) {
+        setTimeout(initWebSocket, 2000); // Attempt to reconnect 25 times before giving up
+      }
+      console.log('No connection established. Restart app to retry.');
     };
 
     ws.onmessage = (event) => {
       console.log(event.data);
-      const myObj = JSON.parse(event.data);
-      setReadings(myObj); // Update state with new readings
+      try {
+        const myObj = JSON.parse(event.data);
+        setReadings(myObj); // Update state with new readings
+      } catch (error) {
+        console.error("Error parsing JSON:", error);
+      }
     };
+    
   };
 
   return (
