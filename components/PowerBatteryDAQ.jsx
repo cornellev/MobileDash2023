@@ -38,7 +38,7 @@ export default function PowerBatteryDAQ({ readings }) {
       {/*View for Temperature*/}
       <View style={styles.powersubdiv}>
         <Text style={styles.powertext}>{temperature}</Text>
-        <Text style={styles.unitText}>ºF</Text>
+        <Text style={styles.unitText}>ºC</Text>
       </View>
     </View>
   );

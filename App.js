@@ -82,10 +82,10 @@ const App = () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Success:', data);
+      console.log('Successfully sent data to Live-Timing Dash');
     })
     .catch((error) => {
-      console.error('Error:', error);
+      console.error('Error in sending to Live-Timing Dash:', error);
     });
   };
 

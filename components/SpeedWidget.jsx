@@ -67,11 +67,6 @@ export default function SpeedWidget({readings}) {
   const [resetStopwatch, setResetStopwatch] = useState(false);
   const [lapCounter, setLapCount] = useState(0);
 
-  useEffect(() => {
-    console.log(lapData);
-  }, [lapData]
-  );
-
   const handleLapPress = () => {
     // Save the lap time and reset the stopwatch
     if (isStopwatchStart) {
@@ -103,10 +98,6 @@ export default function SpeedWidget({readings}) {
   }
 
 };
-useEffect(() => {
-  console.log(totalTimeData);
-}, [totalTimeData]
-);
 
   return (
     <View style={styles.speed}>
