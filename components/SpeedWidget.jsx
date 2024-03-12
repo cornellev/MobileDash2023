@@ -74,12 +74,13 @@ export default function SpeedWidget({readings}) {
 
   const handleLapPress = () => {
     // Save the lap time and reset the stopwatch
-    setLapTime(lapTime + totalTime);
-    //setResetStopwatch(true);
-    setLapData((prevLapData) => [...prevLapData, lapTime + totalTime]);
-    // setLapData((prevLapData) => [...prevLapData, totalTime]);
-    setLapTime(0);
-    setLapCount((prevLapCount) => prevLapCount + 1);
+    if (isStopwatchStart) {
+      // Save the lap time and reset the stopwatch
+      setLapTime(lapTime + totalTime);
+      setLapData((prevLapData) => [...prevLapData, lapTime + totalTime]);
+      setLapTime(0);
+      setLapCount((prevLapCount) => prevLapCount + 1);
+    }
   };
 
   const handleTotalTimePress = (time) => {
