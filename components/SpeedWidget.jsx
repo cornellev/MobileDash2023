@@ -79,6 +79,30 @@ export default function SpeedWidget({readings}) {
   };
 
   const handleTotalTimePress = (time) => {
+    if (totalTime != 0) { //Send data if there is any
+      const postData = {
+        lap_ids: null,
+        lap_times: null,
+        total_time: totalTime,
+      };
+      console.log(postData);
+  
+      fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(postData),
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log('Successfully sent timer data to Live-Timing Dash');
+      })
+      .catch((error) => {
+        console.error('Error in sending timer data to Live-Timing Dash:', error);
+      });
+    }
+
     setIsStopwatchStart(!isStopwatchStart);
     if (isStopwatchStart) {
       // If Stopwatch is stopping, reset should be false
