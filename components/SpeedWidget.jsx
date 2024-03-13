@@ -80,7 +80,7 @@ export default function SpeedWidget({readings}) {
 
   const handleTotalTimePress = (time) => {
     setIsStopwatchStart(!isStopwatchStart);
-    if (!isStopwatchStart) {
+    if (isStopwatchStart) {
       // If Stopwatch is stopping, reset should be false
       setResetStopwatch(false);
       // console.log("Resetting lap count");
