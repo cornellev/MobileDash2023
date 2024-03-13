@@ -106,32 +106,22 @@ export default function SpeedWidget({readings}) {
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
 
-      <View style={styles.lapCountCircle}>
-        <Text style={styles.smallText}></Text> 
-       
-
-      </View>
-      <View style={styles.lapMinCircle}>
-        <Text style={styles.smallText}></Text> 
-
-
-      </View>
       <View style={styles.progressBarContainer}>
         <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
       </View>
       <View style={styles.totalTimeCircle}>
       </View>
       
-      <TouchableOpacity onPress={handleLapPress} style={styles.lapMinCircle}>
-        {/* <Text style={styles.unitText}>{formatTime(lapTime + totalTime)}</Text> */}
-        <Text style={[styles.unitText, { fontSize: 13, bottom:5 }]}>{lapData.length > 0 ? lapData[lapData.length - 1]  : ""}</Text>
-        <Text style={[styles.unitText, { fontSize: 20, marginBottom: 0 }]}>Lap {lapCounter}</Text>
+      <TouchableOpacity onPress={handleLapPress} style={[styles.lapMinCircle]}>
+        <Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapData.length > 0 ? lapData[lapData.length - 1]  : ""}</Text>
+
+        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text>
         
 
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleTotalTimePress} style={styles.totalTimeCircle}>
-        <Text style={styles.smallText}>{}</Text>
+      <TouchableOpacity onPress={handleTotalTimePress} style={[styles.totalTimeCircle]}>
+        <Text style={[styles.unitText, {fontSize: 13, margin:0} ]}></Text>
         {isStopwatchStart ? (
           <Stopwatch
             laps
@@ -142,7 +132,7 @@ export default function SpeedWidget({readings}) {
             options={options}
           />
         ) : null}
-        <Text style={[styles.unitText, { fontSize: 20,  marginBottom: 0 }]}>{isStopwatchStart ? "Reset" : "Start"}</Text>
+        <Text style={[styles.unitText, {fontSize: 20, margin:0, bottom: 10}]}>{isStopwatchStart ? "Reset" : "Start"}</Text>
       </TouchableOpacity>
 
     
@@ -260,6 +250,7 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 5,
   },
+  
   totalTimeCircle: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -298,8 +289,11 @@ const styles = StyleSheet.create({
   },
 
   unitText: {
+    justifyContent: 'center',
+    alignItems: 'center',
     fontSize: 20,
-    bottom: 10,
+    //bottom: 10,
+    includeFontPadding: false
   },
 
 })
