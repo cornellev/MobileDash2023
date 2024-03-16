@@ -79,10 +79,10 @@ export default function SpeedWidget({readings}) {
   };
 
   const handleTotalTimePress = (time) => {
-    if (totalTime != 0) { //Send data if there is any
+    if (totalTime != 0) { // Send data if there is any
       const postData = {
-        lap_ids: null,
-        lap_times: null,
+        lap_ids: null, // NEED TO ADD
+        lap_times: null, // NEED TO ADD
         total_time: totalTime,
       };
       console.log(postData);
