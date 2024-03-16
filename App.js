@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, LogBox } from 'react-native';
 import PowerBatteryDAQ from './components/PowerBatteryDAQ';
 import SpeedWidget from './components/SpeedWidget';
 import MapWidget from './components/MapWidget';
+
+LogBox.ignoreAllLogs();
 
 const App = () => {
   const [websocket, setWebsocket] = useState(null);

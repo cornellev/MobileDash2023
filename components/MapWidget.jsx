@@ -1,13 +1,6 @@
-
-// center: {
-//   latitude: 39.794869,
-//   longitude: -86.234521,
-// },
-
 import React, { useState, useEffect } from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import MapView from 'react-native-maps';
-import * as Location from 'expo-location';
 
 const { width, height } = Dimensions.get("window");
 
@@ -23,21 +16,14 @@ export default function App() {
   const [location, setLocation] = useState({
     latitude: 39.794869,
     longitude: -86.234521,
+    // latitude: 42.4440,
+    // longitude: -76.4820,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
 
   useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
-        console.error('Permission to access location was denied');
-        return;
-      }
-
-      let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-    })();
+    setLocation(location);
   }, []);
 
   return (
@@ -56,6 +42,7 @@ export default function App() {
         zoomEnabled={false}
         rotateEnabled={false}
         customMapStyle={mapStyle}
+        showsMyLocationButton={false}
       />
     </View>
   );
