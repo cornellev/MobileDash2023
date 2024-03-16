@@ -79,28 +79,9 @@ export default function SpeedWidget({readings}) {
   };
 
   const handleTotalTimePress = (time) => {
+
     if (totalTime != 0) { // Send data if there is any
-      const postData = {
-        lap_ids: null, // NEED TO ADD
-        lap_times: null, // NEED TO ADD
-        total_time: totalTime,
-      };
-      console.log(postData);
-  
-      fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(postData),
-      })
-      .then(response => response.json())
-      .then(data => {
-        console.log('Successfully sent timer data to Live-Timing Dash');
-      })
-      .catch((error) => {
-        console.error('Error in sending timer data to Live-Timing Dash:', error);
-      });
+      sendData(null, null, totalTime);
     }
 
     setIsStopwatchStart(!isStopwatchStart);
@@ -121,6 +102,29 @@ export default function SpeedWidget({readings}) {
     return milesPerHour;
   }
 
+  function sendData(lap_ids, lap_times, total_time) {
+    const postData = {
+      lap_ids: lap_ids,
+      lap_times: lap_times,
+      total_time: total_time,
+    };
+    console.log(postData);
+
+    fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postData),
+    })
+    .then(response => response.json())
+    .then(data => {
+      console.log('Successfully sent timer data to Live-Timing Dash');
+    })
+    .catch((error) => {
+      console.error('Error in sending timer data to Live-Timing Dash:', error);
+    });
+  }
 };
 
   return (
