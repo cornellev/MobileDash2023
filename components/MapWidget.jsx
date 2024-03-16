@@ -21,8 +21,8 @@ const mapStyle = [
 
 export default function App() {
   const [location, setLocation] = useState({
-    latitude: 42.4440,
-    longitude: -76.4820,
+    latitude: 39.794869,
+    longitude: -86.234521,
     latitudeDelta: 0.0922,
     longitudeDelta: 0.0421,
   });
@@ -36,11 +36,7 @@ export default function App() {
       }
 
       let currentLocation = await Location.getCurrentPositionAsync({});
-      setLocation({
-        ...location,
-        latitude: currentLocation.coords.latitude,
-        longitude: currentLocation.coords.longitude,
-      });
+      setLocation(location);
     })();
   }, []);
 
