@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions } from "react-native"
+import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from "react-native"
 
 const { width, height } = Dimensions.get("window");
 
-export default function PowerBatteryDAQ({ readings }) {
+export default function PowerBatteryDAQ({ readings, onConnect }) {
   // State to manage DAQ connection status and temperature
   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
   const [temperature, setTemperature] = useState('N/A');
@@ -21,13 +21,20 @@ export default function PowerBatteryDAQ({ readings }) {
     }
   }, [readings]);
 
+  const handlePress = () => {
+    if (connectionStatus === 'Disconnected') {
+      console.log("Pressed")
+      onConnect();
+    }
+  };
+
   return (
     <View style={styles.power}>
       {/*View for DAQ Connection Status*/}
-      <View style={styles.powersubdiv}>
+      <TouchableOpacity onPress={handlePress} style={styles.powersubdiv}>
         <Text style={styles.daqtext}>DAQ</Text>
-        <Text style={styles.unitText}>{connectionStatus}</Text>
-      </View>
+          <Text style={styles.buttonText}>{connectionStatus}</Text>
+      </TouchableOpacity>
 
       {/*View for Battery Percentage (Static for now)*/}
       <View style={styles.powersubdiv}>

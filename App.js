@@ -12,7 +12,6 @@ const App = () => {
   const [connectionAttempts, setConnectionAttempts] = useState(0); // New state for tracking connection attempts
 
   useEffect(() => {
-    initWebSocket();
     // Clean up WebSocket connection when the component unmounts
     return () => {
       if (websocket) {
@@ -28,13 +27,13 @@ const App = () => {
   };
 
   const initWebSocket = () => {
-    if (connectionAttempts >= 25) { // Check if maximum attempts have been reached
+    if (connectionAttempts >= 3) { // Check if maximum attempts have been reached
       console.log("Max connection attempts reached. Not trying to reconnect.");
       return;
     }
 
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
-    const host = "192.168.34.24"; // Use your server's hostname or IP
+    const host = "192.168.55.24"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
@@ -100,7 +99,7 @@ const App = () => {
         },
       ]}>
       <SpeedWidget readings={readings}></SpeedWidget>
-      <PowerBatteryDAQ readings={readings}></PowerBatteryDAQ>
+      <PowerBatteryDAQ readings={readings} onConnect={initWebSocket}></PowerBatteryDAQ>
       <MapWidget></MapWidget>
     </View>
   );
