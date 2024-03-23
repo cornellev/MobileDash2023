@@ -66,16 +66,51 @@ export default function SpeedWidget({readings}) {
   const [isStopwatchStart, setIsStopwatchStart] = useState(false);
   const [resetStopwatch, setResetStopwatch] = useState(false);
   const [lapCounter, setLapCount] = useState(0);
-
+  const [lapDataB, setLapDataB] = useState([]);
+  
   const handleLapPress = () => {
-    // Save the lap time and reset the stopwatch
+   // Save the lap time and reset the stopwatch
     if (isStopwatchStart) {
       // Save the lap time and reset the stopwatch
       setLapTime(lapTime + totalTime);
+      console.log("lapData " + lapData);
+      console.log("total: " + totalTime);
+
+    
+
+      //const lapTimeInMs = lapHours * 3600000 + lapMinutes * 60000 + lapSeconds * 1000 + lapMilliseconds;
+      const totalTimeInMs = convertTimeToMilliseconds(totalTime);
+      const lastTimeTemp = lapData.length > 0 ? convertTimeToMilliseconds(lapData[lapData.length - 1]) : 0;
+      const lapDuration = totalTimeInMs -  lastTimeTemp;
+      const formattedLapDuration = convertMillisecondsToTime(lapDuration);
+
+
+      
       setLapData((prevLapData) => [...prevLapData, lapTime + totalTime]);
+      setLapDataB((prevLapDataB) => [...prevLapDataB, formattedLapDuration]);
+
+
       setLapTime(0);
       setLapCount((prevLapCount) => prevLapCount + 1);
+
+    
     }
+   
+  };
+
+  
+  const convertTimeToMilliseconds = (timeString) => {
+    const [hours, minutes, seconds, milliseconds] = timeString.split(':').map(Number);
+    return hours * 3600000 + minutes * 60000 + seconds * 1000 + milliseconds;
+  };
+  
+  const convertMillisecondsToTime = (milliseconds) => {
+    const pad = (num) => (num < 10 ? `0${num}` : num.toString());
+    const seconds = Math.floor((milliseconds / 1000) % 60);
+    const minutes = Math.floor((milliseconds / (1000 * 60)) % 60);
+    const hours = Math.floor(milliseconds / (1000 * 60 * 60));
+    const formattedTime = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}:${pad(milliseconds % 1000)}`;
+    return formattedTime;
   };
 
   const handleTotalTimePress = (time) => {
@@ -141,7 +176,7 @@ export default function SpeedWidget({readings}) {
       </View>
       
       <TouchableOpacity onPress={handleLapPress} style={[styles.lapMinCircle]}>
-        <Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapData.length > 0 ? lapData[lapData.length - 1]  : ""}</Text>
+        <Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
 
         <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text>
         
