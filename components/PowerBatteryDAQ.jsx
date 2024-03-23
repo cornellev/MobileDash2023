@@ -23,7 +23,6 @@ export default function PowerBatteryDAQ({ readings, onConnect }) {
 
   const handlePress = () => {
     if (connectionStatus === 'Disconnected') {
-      console.log("Pressed")
       onConnect();
     }
   };
