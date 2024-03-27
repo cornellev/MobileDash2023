@@ -116,7 +116,7 @@ export default function SpeedWidget({readings}) {
   const handleTotalTimePress = (time) => {
 
     if (totalTime != 0) { // Send data if there is any
-      sendData(null, null, totalTime);
+      sendData(null, lapDataB, totalTime);
     }
 
     setIsStopwatchStart(!isStopwatchStart);

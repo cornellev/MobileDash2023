@@ -46,10 +46,11 @@ const App = () => {
     }
 
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
-    const host = "172.20.10.9"; // Use your server's hostname or IP
+    const host = "192.168.225.230"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
+    setConnectionAttempts(connectionAttempts + 1);
     const ws = new WebSocket(gateway);
 
     ws.onopen = () => {
@@ -82,7 +83,9 @@ const App = () => {
     setLocation(location);
 
     const postData = {
-      accel: null,
+      x_accel: data["x_accel"] ? parseFloat(data["x_accel RM"]) : null,
+      y_accel: data["y_accel"] ? parseFloat(data["y_accel RM"]) : null,
+      z_accel: data["z_accel"] ? parseFloat(data["z_accel RM"]) : null,
       gps_lat: location?.coords?.latitude,
       gps_long: location?.coords?.longitude,
       left_rpm: data["LEFT RPM"] ? parseFloat(data["LEFT RPM"]) : null,
