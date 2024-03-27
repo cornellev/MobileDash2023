@@ -133,7 +133,7 @@ export default function SpeedWidget({readings}) {
   function calcSpeed(leftRPM, rightRPM, diameter) {
     let avgRPM = (leftRPM + rightRPM) / 2;
     let inchesPerMin = diameter * PI * avgRPM;
-    let milesPerHour = inchesPerMin * (60.0 / 63360.0);
+    let milesPerHour = inchesPerMin / (1056.0);
     return milesPerHour;
   }
 

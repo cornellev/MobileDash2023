@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, View, Text, LogBox } from 'react-native';
+import * as Location from 'expo-location';
 import PowerBatteryDAQ from './components/PowerBatteryDAQ';
 import SpeedWidget from './components/SpeedWidget';
 import MapWidget from './components/MapWidget';
@@ -10,9 +11,21 @@ const App = () => {
   const [websocket, setWebsocket] = useState(null);
   const [readings, setReadings] = useState({});
   const [connectionAttempts, setConnectionAttempts] = useState(0); // New state for tracking connection attempts
+  const [location, setLocation] = useState(null);
 
   useEffect(() => {
     // Clean up WebSocket connection when the component unmounts
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
+      if (status !== 'granted') {
+        console.error('Permission to access location was denied');
+        return;
+      }
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+    })();
+
     return () => {
       if (websocket) {
         websocket.close();
@@ -33,7 +46,7 @@ const App = () => {
     }
 
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
-    const host = "192.168.55.24"; // Use your server's hostname or IP
+    const host = "172.20.10.9"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
@@ -66,15 +79,19 @@ const App = () => {
 
   // Function to send data to server
   const sendDataToServer = (data) => {
+    setLocation(location);
+
     const postData = {
-      speed: null,
-      voltage: null,
-      safety: null,
+      accel: null,
+      gps_lat: location?.coords?.latitude,
+      gps_long: location?.coords?.longitude,
       left_rpm: data["LEFT RPM"] ? parseFloat(data["LEFT RPM"]) : null,
       right_rpm: data["RIGHT RPM"] ? parseFloat(data["RIGHT RPM"]) : null,
+      potent: null,
+      temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
     };
 
-    fetch('http://live-timing-dash.herokuapp.com/sept_test_table', {
+    fetch('http://live-timing-dash.herokuapp.com/insert/uc24', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
