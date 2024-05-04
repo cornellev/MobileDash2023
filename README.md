@@ -57,7 +57,7 @@ There are three main component files, one for each "column" in the mobile applic
 
 ![Speedo](https://github.com/adityakakade432/MobileDash2023/assets/158237006/64e52df5-9f85-4192-8610-7df6b457535e)
 
-The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It displays the speed of the car in mph, and has a small bar underneath that changes based on the speed. In the future, this should change in response to strength of breaking force in the car. This file also contains methods for the lap-timing functionality using Reach Native's "react-native-stopwatch-timer" library. The lapping data is the only data not collected through DAQ, so this file also sends a POST request to the Live-Timing dashboard with collected data. 
+The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It calculates and displays the speed of the car in mph, and has a small bar underneath that changes based on the speed. In the future, this should change in response to strength of breaking force in the car. This file also contains methods for the lap-timing functionality using Reach Native's "react-native-stopwatch-timer" library. The lapping data is the only data not collected through DAQ, so this file also sends a POST request to the Live-Timing dashboard with collected data. 
 
 <img width="250" alt="Screen Shot 2024-05-04 at 12 01 26 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/6acdb987-a708-44f3-bf0c-4bc7b1296008">
 <img width="250" alt="Screen Shot 2024-05-04 at 12 04 13 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/e548cf55-7ae9-4729-ad61-cf423fab884b">
