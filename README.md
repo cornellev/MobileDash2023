@@ -51,12 +51,6 @@ Finally, to run the dashboard on your local device, navigate to the root directo
 Overview
 The Mobile Dashboard is currently implemented using React Native. We used create-react-app to create the initial empty React app. This automatically created all of the files necessary to implement a working React app so that the Dashboard could be built from this base. 
 
-Application Architecture: Frontend
-
-<img width="577" alt="Screen Shot 2024-05-04 at 11 46 24 AM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/ac2f837e-05bd-43b5-9553-d475041be480">
-
-<img width="467" alt="Screen Shot 2024-05-04 at 11 47 04 AM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/b4799121-0050-4aaa-802b-009ee242dc36">
-
 App.js is the main file that runs the application. It contains instances of our other componenets that make up the widgets that are displayed on dashboard. It also contains the functionality to connect to the DAQ via websockets, collect the data from the DAQ, and send the collected DAQ data to the Live Timing Dashboard.
 
 Componenets
@@ -67,13 +61,3 @@ The SpeedWidget.jsx file denotes the code for the speed widget on the far left c
 The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. The data displayed is collected from DAQ. 
 
 The MapWidget.jsx file denotes the code for the rightmost column of the dashboard. It display's the car's current position on a map. The component imports the "MapView" module from the "react-native-maps" library. It also uses StyleSheet to style how the map view looks like in CSS. 
-
-
-Application Architecture: Backend 
-
-# Challenges
-1. One challenge we encountered was finding a way to develop the app in a landscape orientation. We solved this issue by using the StyleSheet module's transform to rotate components by 90 degrees so that while we created the widgets in a portrait orientation, the app is used in landscape.
-
-# Testing
-
-# Semester Work
