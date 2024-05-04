@@ -59,11 +59,11 @@ There are three main component files, one for each "column" in the mobile applic
 
 The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It also imports the Text module from "react-native" library and uses an instance of the StylesSheet library to create a circle and customize the look of it. This file also contains methods for the speedometer and lap-timing functionality, and sends a POST request to the Live-Timing dashboard with collected data. The speedometer determines the speed of the car given RPM data from DAQ alongside the diameter of the car's tires. 
 
-<img width="205" alt="Screen Shot 2024-05-04 at 12 01 26 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/6acdb987-a708-44f3-bf0c-4bc7b1296008">
-<img width="205" alt="Screen Shot 2024-05-04 at 12 04 13 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/e548cf55-7ae9-4729-ad61-cf423fab884b">
+<img width="250" alt="Screen Shot 2024-05-04 at 12 01 26 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/6acdb987-a708-44f3-bf0c-4bc7b1296008">
+<img width="250" alt="Screen Shot 2024-05-04 at 12 04 13 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/e548cf55-7ae9-4729-ad61-cf423fab884b">
 
 The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. The data displayed is collected from DAQ. 
 
-<img width="395" alt="Screen Shot 2024-05-04 at 12 14 37 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/a904d5f4-d8e5-47da-afc2-57ae13e8bba8">
+<img width="600" alt="Screen Shot 2024-05-04 at 12 14 37 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/a904d5f4-d8e5-47da-afc2-57ae13e8bba8">
 
 The MapWidget.jsx file denotes the code for the rightmost column of the dashboard. It display's the car's current position on a map. The component imports the "MapView" module from the "react-native-maps" library. It also uses StyleSheet to style how the map view looks like in CSS. 
