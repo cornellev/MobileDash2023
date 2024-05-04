@@ -1,17 +1,23 @@
 ## MobileDash2023 | FA 2023
 
-Authors: Aditya Kakade & Katherine Chang Wu
+Authors: Aditya Kakade, Katherine Chang Wu, Daniel Sorokin
 
 # Summary
 System Description 
-The Mobile Dashboard is a mobile application that is used to dispaly statistics about the electric vehicle. This dashboard is mainly used by team members and the driver during competition to view data about the vechile's current performance. The purpose of the Mobile Dashboard is to keep track of the various details of the car in a user intuitive format as it runs so that the driver can be aware the car's metrics. This dashboard will also send the collected data of the car's metrics to the Historical Dashboard so that it can be further analyzed to improve performance.
+The Mobile Dashboard is a mobile application that is used to dispaly statistics about the electric vehicle. This dashboard is mainly used by team members and the driver during competition to view data about the vechile's current performance. The purpose of the Mobile Dashboard is to keep track of the various details of the car in a user intuitive format as it runs so that the driver can be aware the car's metrics. This dashboard will also send the collected data of the car's metrics to the Living Timing and Historical Dashboard so that it can be further analyzed to improve performance.
 
-The infomration displayed on the Mobile Dashboard is broken down into three categories. The most far left widget displays the current speed the car is traveling at in miles per hour. The number will reflect any changes as the car speeds or slows down. The next widget to the right displays various metrics relating to the car's power. The top widget in this column is the vehicle's power in kilowatts per hour. The next widget down displays the battery power as a percentage while the last widget displays the connection status of the dashboard to the DAQ. Finally, the farthest right widget is a map that tracks the car's positions during the race. All of this data comes from the DAQ.
+The infomration displayed on the Mobile Dashboard is broken down into three categories. 
+
+The most far left widget displays the current speed the car is traveling at in miles per hour. The number will reflect any changes as the car speeds or slows down. It also contains the lap timing mechanism. To initiate the timer, the user will press the right start button, and then to mark the completion of a lap, they will press the left lap button. On the completion of the race, the user will reset the timer, and the data will be sent to the Live Timing Dashboard.
+
+The next widget to the right displays various metrics relating to the car. The top widget in this column is the vehicle's temperature in Celcius. The next widget down displays the battery power as a percentage. The last widget displays the connection status of the dashboard to the DAQ. To initiate a connection with DAQ, the user must press this DAQ button. 
+
+Finally, the farthest right widget is a map that tracks the car's positions during the race.
 
 The frontend of the Mobile Dashboard was implemented using React Native (with a focus on Android usage), which combines the use of JSX, HTML, Javascript, and CSS. 
 
+<img width="921" alt="Screen Shot 2024-05-04 at 11 36 45 AM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/4a199d18-1886-49b6-99b4-687f54693789">
 
-<img width="797" alt="Screenshot 2023-12-09 at 10 01 47 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/4c2c330c-c1d4-462e-8834-0a5d3a27eef9">
 
 Terminology
 DAQ (Data Acquisition): Handles communication of data from electrical systems and sensors to driver and team.
@@ -46,26 +52,19 @@ Overview
 The Mobile Dashboard is currently implemented using React Native. We used create-react-app to create the initial empty React app. This automatically created all of the files necessary to implement a working React app so that the Dashboard could be built from this base. 
 
 Application Architecture: Frontend
-App.js
-App.js is the main file that runs the application. It contains instances of our other componenets that make up the widgets that are displayed on dashboard. 
+
+<img width="577" alt="Screen Shot 2024-05-04 at 11 46 24 AM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/ac2f837e-05bd-43b5-9553-d475041be480">
+
+<img width="467" alt="Screen Shot 2024-05-04 at 11 47 04 AM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/b4799121-0050-4aaa-802b-009ee242dc36">
+
+App.js is the main file that runs the application. It contains instances of our other componenets that make up the widgets that are displayed on dashboard. It also contains the functionality to connect to the DAQ via websockets, collect the data from the DAQ, and send the collected DAQ data to the Live Timing Dashboard.
 
 Componenets
 There are three main component files, one for each "column" in the mobile application. These are all contained in the "component" folder in the root directory of this repo. All three componenets import three modules from "react-native" library: View, StyleSheet, and Dimesions. 
 
-<img width="388" alt="Screenshot 2023-12-09 at 11 14 24 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/29a396ce-ec68-4e26-9aa9-d976da93d30e">
+The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It also imports the Text module from "react-native" library and uses an instance of the StylesSheet library to create a circle and customize the look of it. This file also contains methods for the speedometer and lap-timing functionality, and sends a POST request to the Live-Timing dashboard with collected data. The speedometer determines the speed of the car given RPM data from DAQ alongside the diameter of the car's tires. 
 
-<img width="288" alt="Screenshot 2023-12-09 at 11 14 42 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/c71699ea-c26a-4296-887e-62bcf1283028">
-
-
-The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It also imports the Text module from "react-native" library and uses an instance of the StylesSheet library to create a circle and customize the look of it. 
-
-<img width="430" alt="Screenshot 2023-12-09 at 11 13 11 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/b2d0341d-253d-4b91-a8f7-3ccda76e3707">
-
-<img width="234" alt="Screenshot 2023-12-09 at 11 13 48 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/8f71485a-3c04-4d46-bc79-f2253bf8ba38">
-
-The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. It displays metrics for power, battery percentage, and connection status to the DAQ. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. 
-
-<img width="378" alt="Screenshot 2023-12-09 at 11 17 12 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/90734482/3427b070-4bd2-4279-876c-e6d14ec0eda7">
+The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. The data displayed is collected from DAQ. 
 
 The MapWidget.jsx file denotes the code for the rightmost column of the dashboard. It display's the car's current position on a map. The component imports the "MapView" module from the "react-native-maps" library. It also uses StyleSheet to style how the map view looks like in CSS. 
 
