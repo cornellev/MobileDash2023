@@ -64,6 +64,6 @@ The SpeedWidget.jsx file denotes the code for the speed widget on the far left c
 
 The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. The data displayed is collected from DAQ. 
 
-<img width="231" alt="Screen Shot 2024-05-04 at 12 08 15 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/3f57c9f0-c7c0-49d3-bf3f-85550125c32f">
+<img width="395" alt="Screen Shot 2024-05-04 at 12 14 37 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/a904d5f4-d8e5-47da-afc2-57ae13e8bba8">
 
 The MapWidget.jsx file denotes the code for the rightmost column of the dashboard. It display's the car's current position on a map. The component imports the "MapView" module from the "react-native-maps" library. It also uses StyleSheet to style how the map view looks like in CSS. 
