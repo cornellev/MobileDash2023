@@ -53,11 +53,17 @@ The Mobile Dashboard is currently implemented using React Native. We used create
 
 App.js is the main file that runs the application. It contains instances of our other componenets that make up the widgets that are displayed on dashboard. It also contains the functionality to connect to the DAQ via websockets, collect the data from the DAQ, and send the collected DAQ data to the Live Timing Dashboard.
 
-Componenets
 There are three main component files, one for each "column" in the mobile application. These are all contained in the "component" folder in the root directory of this repo. All three componenets import three modules from "react-native" library: View, StyleSheet, and Dimesions. 
+
+![Speedo](https://github.com/adityakakade432/MobileDash2023/assets/158237006/64e52df5-9f85-4192-8610-7df6b457535e)
 
 The SpeedWidget.jsx file denotes the code for the speed widget on the far left column in red. It also imports the Text module from "react-native" library and uses an instance of the StylesSheet library to create a circle and customize the look of it. This file also contains methods for the speedometer and lap-timing functionality, and sends a POST request to the Live-Timing dashboard with collected data. The speedometer determines the speed of the car given RPM data from DAQ alongside the diameter of the car's tires. 
 
+<img width="205" alt="Screen Shot 2024-05-04 at 12 01 26 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/6acdb987-a708-44f3-bf0c-4bc7b1296008">
+<img width="205" alt="Screen Shot 2024-05-04 at 12 04 13 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/e548cf55-7ae9-4729-ad61-cf423fab884b">
+
 The PowerBatteryDAQ.jsx file denotes the code for the middle column of the dashboard. Much like SpeedWidget.jsx, it imports the Text module and uses StyleSheet to complete the frontend. The data displayed is collected from DAQ. 
+
+<img width="231" alt="Screen Shot 2024-05-04 at 12 08 15 PM" src="https://github.com/adityakakade432/MobileDash2023/assets/158237006/3f57c9f0-c7c0-49d3-bf3f-85550125c32f">
 
 The MapWidget.jsx file denotes the code for the rightmost column of the dashboard. It display's the car's current position on a map. The component imports the "MapView" module from the "react-native-maps" library. It also uses StyleSheet to style how the map view looks like in CSS. 
