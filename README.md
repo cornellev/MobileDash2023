@@ -1,4 +1,4 @@
-## MobileDash2023 | FA 2023
+## MobileDash2023 | SP 2024
 
 Authors: Aditya Kakade, Katherine Chang Wu, Daniel Sorokin
 
