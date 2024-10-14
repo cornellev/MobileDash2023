@@ -4,8 +4,6 @@ import Svg, { Path } from 'react-native-svg';
 import React, {useState, useEffect} from 'react';
 import { Stopwatch } from 'react-native-stopwatch-timer'
 
-
-
 const interpolateColor = (speed, minSpeed, maxSpeed, startColor, endColor) => {
   // Calculate ratio of current speed within speed range
   const ratio = (speed - minSpeed) / (maxSpeed - minSpeed);
@@ -45,8 +43,6 @@ export default function SpeedWidget({readings}) {
       let calculatedSpeed = calcSpeed(readings['LEFT RPM'], readings['RIGHT RPM'], wheelDiameter);
       // Check for NaN and use 0 instead
       calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
-      // Round to nearest integer
-      // calculatedSpeed = Math.round(calculatedSpeed);
       
       setSpeed(calculatedSpeed.toString()); // Convert to string for the TextInput value
       
@@ -57,7 +53,6 @@ export default function SpeedWidget({readings}) {
     }
   }, [readings]);
   
-
   // stopwatch implementation 
   const [lapTime, setLapTime] = useState(0);
   const [lapData, setLapData] = useState([]);
@@ -69,36 +64,25 @@ export default function SpeedWidget({readings}) {
   const [lapDataB, setLapDataB] = useState([]);
   
   const handleLapPress = () => {
-   // Save the lap time and reset the stopwatch
+    // Save the lap time and reset the stopwatch
     if (isStopwatchStart) {
-      // Save the lap time and reset the stopwatch
       setLapTime(lapTime + totalTime);
       console.log("lapData " + lapData);
       console.log("total: " + totalTime);
-
-    
-
-      //const lapTimeInMs = lapHours * 3600000 + lapMinutes * 60000 + lapSeconds * 1000 + lapMilliseconds;
+      
       const totalTimeInMs = convertTimeToMilliseconds(totalTime);
       const lastTimeTemp = lapData.length > 0 ? convertTimeToMilliseconds(lapData[lapData.length - 1]) : 0;
       const lapDuration = totalTimeInMs -  lastTimeTemp;
       const formattedLapDuration = convertMillisecondsToTime(lapDuration);
 
-
-      
       setLapData((prevLapData) => [...prevLapData, lapTime + totalTime]);
       setLapDataB((prevLapDataB) => [...prevLapDataB, formattedLapDuration]);
 
-
       setLapTime(0);
       setLapCount((prevLapCount) => prevLapCount + 1);
-
-    
     }
-   
   };
 
-  
   const convertTimeToMilliseconds = (timeString) => {
     const [hours, minutes, seconds, milliseconds] = timeString.split(':').map(Number);
     return hours * 3600000 + minutes * 60000 + seconds * 1000 + milliseconds;
@@ -113,29 +97,25 @@ export default function SpeedWidget({readings}) {
     return formattedTime;
   };
 
-  const handleTotalTimePress = (time) => {
-
-    if (totalTime != 0) { // Send data if there is any
+  const handleTotalTimePress = () => {
+    if (totalTime !== 0) { // Send data if there is any
       sendData(null, lapDataB, totalTime);
     }
 
-    setIsStopwatchStart(!isStopwatchStart);
     if (isStopwatchStart) {
-      // If Stopwatch is stopping, reset should be false
-      setResetStopwatch(false);
-      // console.log("Resetting lap count");
+      // If stopwatch is stopping, reset should be true
+      setResetStopwatch(true);
       setLapCount(0);
       setTimeData((prevTotal) => [...prevTotal, totalTime]);
       setTotalTime(0);
       setLapData([]);
-  }
+    } else {
+      // If stopwatch is starting, reset should be false
+      setResetStopwatch(false);
+    }
 
-  function calcSpeed(leftRPM, rightRPM, diameter) {
-    let avgRPM = (leftRPM + rightRPM) / 2;
-    let inchesPerMin = diameter * PI * avgRPM;
-    let milesPerHour = inchesPerMin / (1056.0);
-    return milesPerHour;
-  }
+    setIsStopwatchStart(!isStopwatchStart);
+  };
 
   function sendData(lap_ids, lap_times, total_time) {
     const postData = {
@@ -172,7 +152,6 @@ export default function SpeedWidget({readings}) {
       console.error('Error in sending timer data to Live-Timing Dash:', error);
     });
   }
-};
 
   return (
     <View style={styles.speed}>
@@ -189,29 +168,21 @@ export default function SpeedWidget({readings}) {
       
       <TouchableOpacity onPress={handleLapPress} style={[styles.lapMinCircle]}>
         <Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
-
         <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text>
-        
-
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleTotalTimePress} style={[styles.totalTimeCircle]}>
         <Text style={[styles.unitText, {fontSize: 13, margin:0} ]}></Text>
-        {isStopwatchStart ? (
-          <Stopwatch
-            laps
-            msecs
-            start={isStopwatchStart}
-            reset={resetStopwatch}
-            getTime={(time) => setTotalTime(time)} 
-            options={options}
-          />
-        ) : null}
+        <Stopwatch
+          laps
+          msecs
+          start={isStopwatchStart}
+          reset={resetStopwatch}
+          getTime={(time) => setTotalTime(time)} 
+          options={options}
+        />
         <Text style={[styles.unitText, {fontSize: 20, margin:0, bottom: 10}]}>{isStopwatchStart ? "Reset" : "Start"}</Text>
       </TouchableOpacity>
-
-    
-
     </View>
   );
 }
@@ -231,17 +202,6 @@ const options = {
   }
 };
 
-const formatTime = (time) => {
-  const sec = Math.floor(time / 1000);
-  const min = Math.floor(sec / 60);
-  const hr = Math.floor(min / 60);
-  const milliseconds = time % 1000;
-
-  const formattedTime = `${pad(hr)}:${pad(min % 60)}:${pad(sec % 60)}.${pad(milliseconds)}`;
-  return formattedTime;
-};
-const pad = (num) => (num < 10 ? `0${num}` : num.toString());
-
 const styles = StyleSheet.create({
   speed: {
     backgroundColor: "#fad0c3",
@@ -253,7 +213,6 @@ const styles = StyleSheet.create({
     position: 'relative',
     justifyContent: 'center',
     alignItems: 'center',
-
     shadowColor: "#000",
     shadowOpacity: 1,
     shadowRadius: 10,
@@ -269,7 +228,6 @@ const styles = StyleSheet.create({
     left: 0,
     transform: [{ rotate: '90deg' }],
     borderRadius: 20,
-
     shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
@@ -279,7 +237,6 @@ const styles = StyleSheet.create({
     height: '85%',
     borderRadius: 5, 
     justifyContent: 'center',
-
     shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
@@ -298,13 +255,11 @@ const styles = StyleSheet.create({
     borderWidth: 5,
     borderColor: '#ff6666',
     right: 10,
-
     shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 10,
   },
-
   lapMinCircle: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -319,13 +274,11 @@ const styles = StyleSheet.create({
     borderColor: '#ff6666',
     top: 10, 
     left: 10,
-
     shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 5,
   },
-  
   totalTimeCircle: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -340,7 +293,6 @@ const styles = StyleSheet.create({
     borderColor: '#ff6666',
     bottom: 10, 
     left: 10,
-
     shadowColor: "#000",
     shadowOpacity: 0.8,
     shadowRadius: 10,
@@ -351,24 +303,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 0,
   },
-
   smallText: {
     fontSize: 20,
     marginBottom: 5,
     fontWeight: 'bold',
   },
-
   speedUnitText: {
     fontSize: 30,
     bottom: 10,
   },
-
   unitText: {
     justifyContent: 'center',
     alignItems: 'center',
     fontSize: 20,
-    //bottom: 10,
     includeFontPadding: false
   },
-
 })

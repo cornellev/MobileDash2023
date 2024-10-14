@@ -7,14 +7,23 @@ import MapWidget from './components/MapWidget';
 
 LogBox.ignoreAllLogs();
 
-const App = () => {
-  const [websocket, setWebsocket] = useState(null);
-  const [readings, setReadings] = useState({});
-  const [connectionAttempts, setConnectionAttempts] = useState(0); // New state for tracking connection attempts
-  const [location, setLocation] = useState(null);
+class App extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      websocket: null,
+      readings: {},
+      connectionAttempts: 0,
+      location: null,
+    };
+  }
 
-  useEffect(() => {
-    // Clean up WebSocket connection when the component unmounts
+  static getDerivedStateFromProps(nextProps, prevState) {
+    // Handle prop changes here if necessary
+    return null;
+  }
+
+  componentDidMount() {
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -23,24 +32,24 @@ const App = () => {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
+      this.setState({ location });
     })();
+  }
 
-    return () => {
-      if (websocket) {
-        websocket.close();
-      }
-    };
-  }, []); // Empty dependency array means this effect runs once on mount
+  componentWillUnmount() {
+    if (this.state.websocket) {
+      this.state.websocket.close();
+    }
+  }
 
-  const getReadings = () => {
-    if (websocket) {
-      websocket.send("getReadings");
+  getReadings = () => {
+    if (this.state.websocket) {
+      this.state.websocket.send("getReadings");
     }
   };
 
-  const initWebSocket = () => {
-    if (connectionAttempts >= 3) { // Check if maximum attempts have been reached
+  initWebSocket = () => {
+    if (this.state.connectionAttempts >= 3) {
       console.log("Max connection attempts reached. Not trying to reconnect.");
       return;
     }
@@ -50,29 +59,27 @@ const App = () => {
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
-    setConnectionAttempts(connectionAttempts + 1);
+    this.setState(prevState => ({ connectionAttempts: prevState.connectionAttempts + 1 }));
     const ws = new WebSocket(gateway);
 
     ws.onopen = () => {
       console.log('Connection opened');
-      setWebsocket(ws);
-      getReadings();
+      this.setState({ websocket: ws });
+      this.getReadings();
     };
 
     ws.onclose = (event) => {
       console.log('Connection closed');
-      setWebsocket(null);
-      setConnectionAttempts(prevAttempts => prevAttempts + 1); // Increment connection attempts
-      setTimeout(initWebSocket, 2000); // Attempt to reconnect
+      this.setState(prevState => ({ websocket: null, connectionAttempts: prevState.connectionAttempts + 1 }));
+      setTimeout(this.initWebSocket, 2000); // Attempt to reconnect
     };
-
 
     ws.onmessage = (event) => {
       console.log(event.data);
       try {
         const myObj = JSON.parse(event.data);
-        setReadings(myObj); // Update state with new readings
-        sendDataToServer(myObj); // Send RPM data to server
+        this.setState({ readings: myObj }); // Update state with new readings
+        this.sendDataToServer(myObj); // Send RPM data to server
       } catch (error) {
         console.error("Error parsing JSON:", error);
       }
@@ -80,8 +87,8 @@ const App = () => {
   };
 
   // Function to send data to server
-  const sendDataToServer = (data) => {
-    setLocation(location);
+  sendDataToServer = (data) => {
+    const { location } = this.state;
 
     const postData = {
       x_accel: data["x_accel"] ? parseFloat(data["x_accel RM"]) : null,
@@ -111,20 +118,23 @@ const App = () => {
     });
   };
 
-  return (
-    <View
-      style={[
-        styles.container,
-        {
-          flexDirection: 'column',
-        },
-      ]}>
-      <SpeedWidget readings={readings}></SpeedWidget>
-      <PowerBatteryDAQ readings={readings} onConnect={initWebSocket}></PowerBatteryDAQ>
-      <MapWidget></MapWidget>
-    </View>
-  );
-};
+  render() {
+    const { readings } = this.state;
+    return (
+      <View
+        style={[
+          styles.container,
+          {
+            flexDirection: 'column',
+          },
+        ]}>
+        <SpeedWidget readings={readings}></SpeedWidget>
+        <PowerBatteryDAQ readings={readings} onConnect={this.initWebSocket}></PowerBatteryDAQ>
+        <MapWidget></MapWidget>
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   container: {
