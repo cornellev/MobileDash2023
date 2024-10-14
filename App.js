@@ -46,7 +46,7 @@ const App = () => {
     }
 
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
-    const host = "192.168.225.230"; // Use your server's hostname or IP
+    const host = "192.168.1.242"; // Use your server's hostname or IP
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
@@ -65,6 +65,7 @@ const App = () => {
       setConnectionAttempts(prevAttempts => prevAttempts + 1); // Increment connection attempts
       setTimeout(initWebSocket, 2000); // Attempt to reconnect
     };
+
 
     ws.onmessage = (event) => {
       console.log(event.data);

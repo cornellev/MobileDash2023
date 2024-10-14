@@ -46,7 +46,7 @@ export default function SpeedWidget({readings}) {
       // Check for NaN and use 0 instead
       calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
       // Round to nearest integer
-      //calculatedSpeed = Math.round(calculatedSpeed);
+      // calculatedSpeed = Math.round(calculatedSpeed);
       
       setSpeed(calculatedSpeed.toString()); // Convert to string for the TextInput value
       
@@ -141,10 +141,10 @@ export default function SpeedWidget({readings}) {
     const postData = {
       lap_ids: lap_ids,
       lap_times: lap_times,
-      total_time: total_time,
+      total_time: total_time
     };
-    console.log(postData);
-
+    console.log(JSON.stringify(postData));
+  
     fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', {
       method: 'POST',
       headers: {
@@ -152,9 +152,21 @@ export default function SpeedWidget({readings}) {
       },
       body: JSON.stringify(postData),
     })
-    .then(response => response.json())
+    .then(response => {
+      if (!response.ok) {
+        // Handle non-200 HTTP status codes
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      return response.text(); // Change to .text() to capture the response as a string
+    })
     .then(data => {
-      console.log('Successfully sent timer data to Live-Timing Dash');
+      console.log('Response:', data);
+      try {
+        const jsonData = JSON.parse(data);
+        console.log('Successfully sent timer data to Live-Timing Dash:', jsonData);
+      } catch (e) {
+        console.error('Error parsing JSON response:', e);
+      }
     })
     .catch((error) => {
       console.error('Error in sending timer data to Live-Timing Dash:', error);
