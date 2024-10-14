@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, LogBox } from 'react-native';
+import { StyleSheet, View, Text, Button, LogBox } from 'react-native';
 import * as Location from 'expo-location';
 import PowerBatteryDAQ from './components/PowerBatteryDAQ';
 import SpeedWidget from './components/SpeedWidget';
@@ -7,23 +7,13 @@ import MapWidget from './components/MapWidget';
 
 LogBox.ignoreAllLogs();
 
-class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      websocket: null,
-      readings: {},
-      connectionAttempts: 0,
-      location: null,
-    };
-  }
+const App = () => {
+  const [websocket, setWebsocket] = useState(null);
+  const [readings, setReadings] = useState({});
+  const [location, setLocation] = useState(null);
 
-  static getDerivedStateFromProps(nextProps, prevState) {
-    // Handle prop changes here if necessary
-    return null;
-  }
-
-  componentDidMount() {
+  useEffect(() => {
+    // Request location permission
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -32,26 +22,26 @@ class App extends React.Component {
       }
 
       let location = await Location.getCurrentPositionAsync({});
-      this.setState({ location });
+      setLocation(location);
     })();
-  }
 
-  componentWillUnmount() {
-    if (this.state.websocket) {
-      this.state.websocket.close();
-    }
-  }
+    return () => {
+      if (websocket) {
+        websocket.close();
+      }
+    };
+  }, []); // Empty dependency array means this effect runs once on mount
 
-  getReadings = () => {
-    if (this.state.websocket) {
-      this.state.websocket.send("getReadings");
+  const getReadings = () => {
+    if (websocket) {
+      websocket.send("getReadings");
     }
   };
 
-  initWebSocket = () => {
-    if (this.state.connectionAttempts >= 3) {
-      console.log("Max connection attempts reached. Not trying to reconnect.");
-      return;
+  const initWebSocket = () => {
+    if (websocket) {
+      console.log("WebSocket is already connected.");
+      return; // Exit if WebSocket is already connected
     }
 
     const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
@@ -59,27 +49,25 @@ class App extends React.Component {
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
-    this.setState(prevState => ({ connectionAttempts: prevState.connectionAttempts + 1 }));
     const ws = new WebSocket(gateway);
 
     ws.onopen = () => {
       console.log('Connection opened');
-      this.setState({ websocket: ws });
-      this.getReadings();
+      setWebsocket(ws);
+      getReadings();
     };
 
-    ws.onclose = (event) => {
+    ws.onclose = () => {
       console.log('Connection closed');
-      this.setState(prevState => ({ websocket: null, connectionAttempts: prevState.connectionAttempts + 1 }));
-      setTimeout(this.initWebSocket, 2000); // Attempt to reconnect
+      setWebsocket(null); // Clear WebSocket on close
     };
 
     ws.onmessage = (event) => {
       console.log(event.data);
       try {
         const myObj = JSON.parse(event.data);
-        this.setState({ readings: myObj }); // Update state with new readings
-        this.sendDataToServer(myObj); // Send RPM data to server
+        setReadings(myObj); // Update state with new readings
+        sendDataToServer(myObj); // Send RPM data to server
       } catch (error) {
         console.error("Error parsing JSON:", error);
       }
@@ -87,8 +75,8 @@ class App extends React.Component {
   };
 
   // Function to send data to server
-  sendDataToServer = (data) => {
-    const { location } = this.state;
+  const sendDataToServer = (data) => {
+    setLocation(location);
 
     const postData = {
       x_accel: data["x_accel"] ? parseFloat(data["x_accel RM"]) : null,
@@ -118,23 +106,20 @@ class App extends React.Component {
     });
   };
 
-  render() {
-    const { readings } = this.state;
-    return (
-      <View
-        style={[
-          styles.container,
-          {
-            flexDirection: 'column',
-          },
-        ]}>
-        <SpeedWidget readings={readings}></SpeedWidget>
-        <PowerBatteryDAQ readings={readings} onConnect={this.initWebSocket}></PowerBatteryDAQ>
-        <MapWidget></MapWidget>
-      </View>
-    );
-  }
-}
+  return (
+    <View
+      style={[
+        styles.container,
+        {
+          flexDirection: 'column',
+        },
+      ]}>
+      <SpeedWidget readings={readings}></SpeedWidget>
+      <PowerBatteryDAQ readings={readings} onConnect={initWebSocket}></PowerBatteryDAQ>
+      <MapWidget></MapWidget>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
