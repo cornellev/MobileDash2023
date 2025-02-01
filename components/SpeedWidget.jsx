@@ -99,7 +99,7 @@ export default function SpeedWidget({readings}) {
 
   const handleTotalTimePress = () => {
     if (totalTime !== 0) { // Send data if there is any
-      sendData(null, lapDataB, totalTime);
+      sendData(null, lapDataB, totalTime); 
     }
 
     if (isStopwatchStart) {
@@ -125,7 +125,7 @@ export default function SpeedWidget({readings}) {
     };
     console.log(JSON.stringify(postData));
   
-    fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', {
+    fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', { // Test connection to endpoint
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
