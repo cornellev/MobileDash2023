@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput, TouchableOpacity, TouchableHighlight } from "react-native"
 const { width, height } = Dimensions.get("window");
 import Svg, { Path } from 'react-native-svg';
 import React, {useState, useEffect} from 'react';
@@ -31,6 +31,9 @@ export default function SpeedWidget({readings}) {
   const [speedBarWidth, setSpeedBarWidth] = useState('0%');
   const [speedBarColor, setSpeedBarColor] = useState(startColor);
 
+  const [time, setTime] = useState(0);
+  const [isRunning, setRunning] = useState(false);
+
   useEffect(() => {
     const calcSpeed = (leftRPM, rightRPM, diameter) => {
       let avgRPM = (parseFloat(leftRPM) + parseFloat(rightRPM)) / 2;
@@ -52,6 +55,13 @@ export default function SpeedWidget({readings}) {
       setSpeedBarColor(newColor);
     }
   }, [readings]);
+
+  useEffect(() => {
+    if (isRunning) {
+
+    }
+
+  }, [isRunning]);
   
   // stopwatch implementation 
   const [lapTime, setLapTime] = useState(0);
@@ -117,6 +127,8 @@ export default function SpeedWidget({readings}) {
     setIsStopwatchStart(!isStopwatchStart);
   };
 
+  const onPress = () => null;
+
   function sendData(lap_ids, lap_times, total_time) {
     const postData = {
       lap_ids: lap_ids,
@@ -155,24 +167,38 @@ export default function SpeedWidget({readings}) {
 
   return (
     <View style={styles.speed}>
+      {/* For speedometer */}
       <View style={styles.speedCircle}>
         <Text style={styles.speedText}>{Math.round(speed)}</Text>
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
 
+      {/*
       <View style={styles.progressBarContainer}>
         <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
       </View>
-      <View style={styles.totalTimeCircle}>
+      */}
+
+      <View style={styles.timeDisplayContainer}>
+        <Text>{totalTime}</Text>
       </View>
-      
-      <TouchableOpacity onPress={handleLapPress} style={[styles.lapMinCircle]}>
-        <Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
-        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text>
+
+      {/* For stopwatch controls */}
+      <TouchableOpacity onPress={onPress} style={styles.lapCircle}>
+        <Text>Lap!</Text>
+        {/*<Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
+        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text> */}
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleTotalTimePress} style={[styles.totalTimeCircle]}>
-        <Text style={[styles.unitText, {fontSize: 13, margin:0} ]}></Text>
+      <TouchableOpacity onPress={onPress} style={styles.resetCircle}>
+        <Text>Reset!</Text>
+        {/*<Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
+        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text> */}
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={onPress} style={styles.startstopCircle}>
+        <Text>Start/Stop!</Text>
+        {/*<Text style={[styles.unitText, {fontSize: 13, margin:0} ]}></Text>
         <Stopwatch
           laps
           msecs
@@ -181,7 +207,7 @@ export default function SpeedWidget({readings}) {
           getTime={(time) => setTotalTime(time)} 
           options={options}
         />
-        <Text style={[styles.unitText, {fontSize: 20, margin:0, bottom: 10}]}>{isStopwatchStart ? "Reset" : "Start"}</Text>
+        <Text style={[styles.unitText, {fontSize: 20, margin:0, bottom: 10}]}>{isStopwatchStart ? "Reset" : "Start"}</Text>*/}
       </TouchableOpacity>
     </View>
   );
@@ -242,6 +268,22 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
+  timeDisplayContainer: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 130,
+    height: 50, 
+    alignItems: 'center',
+    justifyContent: 'center',
+    left: 0,
+    transform: [{ rotate: '90deg' }],
+    borderRadius: 5,
+    borderColor: 'black',
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 10,
+  },
   speedCircle: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -259,6 +301,67 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 10,
+  },
+  lapCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 120,
+    height: 120,
+    borderRadius: 120 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    top: 10, 
+    left: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+    activeOpacity: 0.7,
+  },
+  resetCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 80,
+    height: 80,
+    borderRadius: 80 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    bottom: 10,
+    left: 140,
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+    activeOpacity: 0.7,
+  },
+  startstopCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 120,
+    height: 120,
+    borderRadius: 120 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    bottom: 10, 
+    left: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+    underlayColor: '#DDDDDD',
+    activeOpacity: 0.7,
   },
   lapMinCircle: {
     position: 'absolute',
