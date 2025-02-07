@@ -32,7 +32,6 @@ export default function SpeedWidget({readings}) {
   const [speedBarColor, setSpeedBarColor] = useState(startColor);
 
   const [time, setTime] = useState(0);
-  const [isRunning, setRunning] = useState(false);
 
   useEffect(() => {
     const calcSpeed = (leftRPM, rightRPM, diameter) => {
@@ -55,24 +54,67 @@ export default function SpeedWidget({readings}) {
       setSpeedBarColor(newColor);
     }
   }, [readings]);
-
-  useEffect(() => {
-    if (isRunning) {
-
-    }
-
-  }, [isRunning]);
   
   // stopwatch implementation 
-  const [lapTime, setLapTime] = useState(0);
-  const [lapData, setLapData] = useState([]);
-  const [totalTimeData, setTimeData] = useState([]);
-  const [totalTime, setTotalTime] = useState(0);
-  const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  const [resetStopwatch, setResetStopwatch] = useState(false);
-  const [lapCounter, setLapCount] = useState(0);
-  const [lapDataB, setLapDataB] = useState([]);
+  // const [lapTime, setLapTime] = useState(0);
+  // const [lapData, setLapData] = useState([]);
+  // const [totalTimeData, setTimeData] = useState([]);
+  // const [totalTime, setTotalTime] = useState(0);
+  // const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+  // const [resetStopwatch, setResetStopwatch] = useState(false);
+  // const [lapCounter, setLapCount] = useState(0);
+  // const [lapDataB, setLapDataB] = useState([]);
+
+  const [isRunning, setIsRunning] = useState(false); // state for whether stopwatch is running
+  const [startTime, setStartTime] = useState(0); // state for stopwatch's starting time
+  const [totalTime, setTotalTime] = useState(0); // state for stopwatch's total running time
+  const [prevTime, setPrevTime] = useState(0);
+  const [prevLap, setPrevLap] = useState(0); // state for time for previous lap
+  const [lapCount, setLapCount] = useState(0); // state for lap count index
+  const [lapInterval, setLapInterval] = useState(0); // state for current lap time
+
+  useEffect(() => {
+    let interval = null;
+    if (isRunning) {
+      interval = setInterval(() => { // setInterval executes a certain action every specified ms; requires a function
+        setTotalTime(Date.now() - startTime + prevTime)
+      }, 10); 
+    } 
+    else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning]);
+
+  const handleStartStop = () => {
+    if (!isRunning) {
+      setStartTime(Date.now());
+      setIsRunning(true);
+    }
+    else {
+      setPrevTime(totalTime);
+      setIsRunning(false);
+    }
+  }
+
+  const handleLap = () => {
+    if (isRunning) {
+      setLapCount(prevCount => prevCount + 1);
+      setLapInterval(() => totalTime - prevLap);
+      setPrevLap(totalTime)
+    }
+  }
   
+  const handleReset = () => {
+    setIsRunning(false);
+    setTotalTime(0);
+    setStartTime(0);
+    setPrevTime(0);
+    setPrevLap(0);
+    setLapCount(0);
+    setLapInterval(0);
+  }
+
   const handleLapPress = () => {
     // Save the lap time and reset the stopwatch
     if (isStopwatchStart) {
@@ -167,47 +209,30 @@ export default function SpeedWidget({readings}) {
 
   return (
     <View style={styles.speed}>
+      
       {/* For speedometer */}
       <View style={styles.speedCircle}>
         <Text style={styles.speedText}>{Math.round(speed)}</Text>
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
 
-      {/*
-      <View style={styles.progressBarContainer}>
-        <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
-      </View>
-      */}
-
+      {/* For stopwatch time display */}
       <View style={styles.timeDisplayContainer}>
-        <Text>{totalTime}</Text>
+        <Text>{convertMillisecondsToTime(totalTime)}</Text>
       </View>
 
       {/* For stopwatch controls */}
-      <TouchableOpacity onPress={onPress} style={styles.lapCircle}>
-        <Text>Lap!</Text>
-        {/*<Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
-        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text> */}
+      <TouchableOpacity onPress={handleLap} style={styles.lapCircle}>
+        <Text>Lap {lapCount}</Text>
+        <Text>{lapInterval ? convertMillisecondsToTime(lapInterval) : '---'}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={onPress} style={styles.resetCircle}>
+      <TouchableOpacity onPress={handleReset} style={styles.resetCircle}>
         <Text>Reset!</Text>
-        {/*<Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
-        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text> */}
       </TouchableOpacity>
-
-      <TouchableOpacity onPress={onPress} style={styles.startstopCircle}>
+      
+      <TouchableOpacity onPress={handleStartStop} style={styles.startstopCircle}>
         <Text>Start/Stop!</Text>
-        {/*<Text style={[styles.unitText, {fontSize: 13, margin:0} ]}></Text>
-        <Stopwatch
-          laps
-          msecs
-          start={isStopwatchStart}
-          reset={resetStopwatch}
-          getTime={(time) => setTotalTime(time)} 
-          options={options}
-        />
-        <Text style={[styles.unitText, {fontSize: 20, margin:0, bottom: 10}]}>{isStopwatchStart ? "Reset" : "Start"}</Text>*/}
       </TouchableOpacity>
     </View>
   );
