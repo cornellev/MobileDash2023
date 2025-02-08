@@ -68,10 +68,10 @@ export default function SpeedWidget({readings}) {
   const [isRunning, setIsRunning] = useState(false); // state for whether stopwatch is running
   const [startTime, setStartTime] = useState(0); // state for stopwatch's starting time
   const [totalTime, setTotalTime] = useState(0); // state for stopwatch's total running time
-  const [prevTime, setPrevTime] = useState(0);
+  const [prevTime, setPrevTime] = useState(0); // state for the stopped total running time
   const [prevLap, setPrevLap] = useState(0); // state for time for previous lap
   const [lapCount, setLapCount] = useState(0); // state for lap count index
-  const [lapInterval, setLapInterval] = useState(0); // state for current lap time
+  const [lapData, setLapData] = useState([]) // array of lap times
 
   useEffect(() => {
     let interval = null;
@@ -99,9 +99,14 @@ export default function SpeedWidget({readings}) {
 
   const handleLap = () => {
     if (isRunning) {
+      console.log("Lap " + lapCount);
+      console.log(lapData);
+
+      let lapInterval = totalTime - prevLap
+      setLapData(prevLapData => [...prevLapData, lapInterval]);
+
       setLapCount(prevCount => prevCount + 1);
-      setLapInterval(() => totalTime - prevLap);
-      setPrevLap(totalTime)
+      setPrevLap(totalTime);
     }
   }
   
@@ -112,7 +117,7 @@ export default function SpeedWidget({readings}) {
     setPrevTime(0);
     setPrevLap(0);
     setLapCount(0);
-    setLapInterval(0);
+    setLapData([]);
   }
 
   const handleLapPress = () => {
@@ -224,7 +229,7 @@ export default function SpeedWidget({readings}) {
       {/* For stopwatch controls */}
       <TouchableOpacity onPress={handleLap} style={styles.lapCircle}>
         <Text>Lap {lapCount}</Text>
-        <Text>{lapInterval ? convertMillisecondsToTime(lapInterval) : '---'}</Text>
+        <Text>{lapCount != 0 ? convertMillisecondsToTime(lapData[lapCount-1]) : '---'}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={handleReset} style={styles.resetCircle}>
