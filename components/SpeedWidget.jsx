@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput, TouchableOpacity } from "react-native"
+import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput, TouchableOpacity, TouchableHighlight } from "react-native"
 const { width, height } = Dimensions.get("window");
 import Svg, { Path } from 'react-native-svg';
 import React, {useState, useEffect} from 'react';
@@ -31,6 +31,8 @@ export default function SpeedWidget({readings}) {
   const [speedBarWidth, setSpeedBarWidth] = useState('0%');
   const [speedBarColor, setSpeedBarColor] = useState(startColor);
 
+  const [time, setTime] = useState(0);
+
   useEffect(() => {
     const calcSpeed = (leftRPM, rightRPM, diameter) => {
       let avgRPM = (parseFloat(leftRPM) + parseFloat(rightRPM)) / 2;
@@ -54,15 +56,65 @@ export default function SpeedWidget({readings}) {
   }, [readings]);
   
   // stopwatch implementation 
-  const [lapTime, setLapTime] = useState(0);
-  const [lapData, setLapData] = useState([]);
-  const [totalTimeData, setTimeData] = useState([]);
-  const [totalTime, setTotalTime] = useState(0);
-  const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  const [resetStopwatch, setResetStopwatch] = useState(false);
-  const [lapCounter, setLapCount] = useState(0);
-  const [lapDataB, setLapDataB] = useState([]);
+  // const [lapTime, setLapTime] = useState(0);
+  // const [lapData, setLapData] = useState([]);
+  // const [totalTimeData, setTimeData] = useState([]);
+  // const [totalTime, setTotalTime] = useState(0);
+  // const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+  // const [resetStopwatch, setResetStopwatch] = useState(false);
+  // const [lapCounter, setLapCount] = useState(0);
+  // const [lapDataB, setLapDataB] = useState([]);
+
+  const [isRunning, setIsRunning] = useState(false); // state for whether stopwatch is running
+  const [startTime, setStartTime] = useState(0); // state for stopwatch's starting time
+  const [totalTime, setTotalTime] = useState(0); // state for stopwatch's total running time
+  const [prevTime, setPrevTime] = useState(0);
+  const [prevLap, setPrevLap] = useState(0); // state for time for previous lap
+  const [lapCount, setLapCount] = useState(0); // state for lap count index
+  const [lapInterval, setLapInterval] = useState(0); // state for current lap time
+
+  useEffect(() => {
+    let interval = null;
+    if (isRunning) {
+      interval = setInterval(() => { // setInterval executes a certain action every specified ms; requires a function
+        setTotalTime(Date.now() - startTime + prevTime)
+      }, 10); 
+    } 
+    else {
+      clearInterval(interval);
+    }
+    return () => clearInterval(interval);
+  }, [isRunning]);
+
+  const handleStartStop = () => {
+    if (!isRunning) {
+      setStartTime(Date.now());
+      setIsRunning(true);
+    }
+    else {
+      setPrevTime(totalTime);
+      setIsRunning(false);
+    }
+  }
+
+  const handleLap = () => {
+    if (isRunning) {
+      setLapCount(prevCount => prevCount + 1);
+      setLapInterval(() => totalTime - prevLap);
+      setPrevLap(totalTime)
+    }
+  }
   
+  const handleReset = () => {
+    setIsRunning(false);
+    setTotalTime(0);
+    setStartTime(0);
+    setPrevTime(0);
+    setPrevLap(0);
+    setLapCount(0);
+    setLapInterval(0);
+  }
+
   const handleLapPress = () => {
     // Save the lap time and reset the stopwatch
     if (isStopwatchStart) {
@@ -99,7 +151,7 @@ export default function SpeedWidget({readings}) {
 
   const handleTotalTimePress = () => {
     if (totalTime !== 0) { // Send data if there is any
-      sendData(null, lapDataB, totalTime);
+      sendData(null, lapDataB, totalTime); 
     }
 
     if (isStopwatchStart) {
@@ -117,6 +169,8 @@ export default function SpeedWidget({readings}) {
     setIsStopwatchStart(!isStopwatchStart);
   };
 
+  const onPress = () => null;
+
   function sendData(lap_ids, lap_times, total_time) {
     const postData = {
       lap_ids: lap_ids,
@@ -125,7 +179,7 @@ export default function SpeedWidget({readings}) {
     };
     console.log(JSON.stringify(postData));
   
-    fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', {
+    fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', { // Test connection to endpoint
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -155,33 +209,30 @@ export default function SpeedWidget({readings}) {
 
   return (
     <View style={styles.speed}>
+      
+      {/* For speedometer */}
       <View style={styles.speedCircle}>
         <Text style={styles.speedText}>{Math.round(speed)}</Text>
         <Text style={styles.speedUnitText}>mph</Text>
       </View>
 
-      <View style={styles.progressBarContainer}>
-        <View style={[styles.progressBar, { width: speedBarWidth }, { backgroundColor: speedBarColor }]} />
+      {/* For stopwatch time display */}
+      <View style={styles.timeDisplayContainer}>
+        <Text>{convertMillisecondsToTime(totalTime)}</Text>
       </View>
-      <View style={styles.totalTimeCircle}>
-      </View>
-      
-      <TouchableOpacity onPress={handleLapPress} style={[styles.lapMinCircle]}>
-        <Text style={[styles.unitText, { fontSize: 13, margin:0 }]}>{lapDataB.length > 0 ? lapDataB[lapDataB.length - 1]  : ""}</Text>
-        <Text style={[styles.unitText, { fontSize: 20, margin:0 }]}>Lap {lapCounter}</Text>
+
+      {/* For stopwatch controls */}
+      <TouchableOpacity onPress={handleLap} style={styles.lapCircle}>
+        <Text>Lap {lapCount}</Text>
+        <Text>{lapInterval ? convertMillisecondsToTime(lapInterval) : '---'}</Text>
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={handleTotalTimePress} style={[styles.totalTimeCircle]}>
-        <Text style={[styles.unitText, {fontSize: 13, margin:0} ]}></Text>
-        <Stopwatch
-          laps
-          msecs
-          start={isStopwatchStart}
-          reset={resetStopwatch}
-          getTime={(time) => setTotalTime(time)} 
-          options={options}
-        />
-        <Text style={[styles.unitText, {fontSize: 20, margin:0, bottom: 10}]}>{isStopwatchStart ? "Reset" : "Start"}</Text>
+      <TouchableOpacity onPress={handleReset} style={styles.resetCircle}>
+        <Text>Reset!</Text>
+      </TouchableOpacity>
+      
+      <TouchableOpacity onPress={handleStartStop} style={styles.startstopCircle}>
+        <Text>Start/Stop!</Text>
       </TouchableOpacity>
     </View>
   );
@@ -242,6 +293,22 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 10,
   },
+  timeDisplayContainer: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 130,
+    height: 50, 
+    alignItems: 'center',
+    justifyContent: 'center',
+    left: 0,
+    transform: [{ rotate: '90deg' }],
+    borderRadius: 5,
+    borderColor: 'black',
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 10,
+  },
   speedCircle: {
     position: 'absolute',
     backgroundColor: 'white',
@@ -259,6 +326,67 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 10,
+  },
+  lapCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 120,
+    height: 120,
+    borderRadius: 120 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    top: 10, 
+    left: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+    activeOpacity: 0.7,
+  },
+  resetCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 80,
+    height: 80,
+    borderRadius: 80 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    bottom: 10,
+    left: 140,
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+    activeOpacity: 0.7,
+  },
+  startstopCircle: {
+    position: 'absolute',
+    backgroundColor: 'white',
+    width: 120,
+    height: 120,
+    borderRadius: 120 / 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    flexDirection: 'column',
+    transform: [{ rotate: '90deg' }],
+    borderWidth: 5,
+    borderColor: '#ff6666',
+    bottom: 10, 
+    left: 10,
+    shadowColor: "#000",
+    shadowOpacity: 0.8,
+    shadowRadius: 10,
+    elevation: 5,
+    underlayColor: '#DDDDDD',
+    activeOpacity: 0.7,
   },
   lapMinCircle: {
     position: 'absolute',
