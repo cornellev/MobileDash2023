@@ -88,6 +88,7 @@ export default function SpeedWidget({readings}) {
 
   const handleStartStop = () => {
     if (!isRunning) {
+      console.log(lapData);
       setStartTime(Date.now());
       setIsRunning(true);
     }
@@ -112,6 +113,8 @@ export default function SpeedWidget({readings}) {
   
   const handleReset = () => {
     setIsRunning(false);
+    sendData(0, lapData, totalTime);
+    console.log(lapData);
     setTotalTime(0);
     setStartTime(0);
     setPrevTime(0);
@@ -155,8 +158,8 @@ export default function SpeedWidget({readings}) {
   };
 
   const handleTotalTimePress = () => {
-    if (totalTime !== 0) { // Send data if there is any
-      sendData(null, lapDataB, totalTime); 
+    if (totalTime !== 0) { //  data if there is anySend
+      sendData(1, lapData, totalTime); 
     }
 
     if (isStopwatchStart) {
@@ -178,13 +181,13 @@ export default function SpeedWidget({readings}) {
 
   function sendData(lap_ids, lap_times, total_time) {
     const postData = {
-      lap_ids: lap_ids,
-      lap_times: lap_times,
-      total_time: total_time
+      lap_ids: parseFloat(lap_ids),
+      lap_times: lap_times.map(num => parseFloat(num)),
+      total_time: parseFloat(total_time)
     };
     console.log(JSON.stringify(postData));
   
-    fetch('http://live-timing-dash.herokuapp.com/insert/lap_uc24', { // Test connection to endpoint
+    fetch('http://live-timing-dash.herokuapp.com/api/v1/timing', { // Test connection to endpoint
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
