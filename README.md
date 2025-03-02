@@ -1,18 +1,18 @@
 ## MobileDash2023 | SP 2024
 
-Authors: Aditya Kakade, Katherine Chang Wu, Daniel Sorokin
+Authors: Aditya Kakade, Katherine Chang Wu, Daniel Sorokin, Julia Lau
 
 # Summary
 System Description 
-The Mobile Dashboard is a mobile application that is used to dispaly statistics about the electric vehicle. This dashboard is mainly used by team members and the driver during competition to view data about the vechile's current performance. The purpose of the Mobile Dashboard is to keep track of the various details of the car in a user intuitive format as it runs so that the driver can be aware the car's metrics. This dashboard will also send the collected data of the car's metrics to the Living Timing and Historical Dashboard so that it can be further analyzed to improve performance.
+The Mobile Dashboard is a mobile application that displays relevant information on CEV's electric vehicle. This dashboard is used by the driver and team members during competition to view data about the vehicle's current performance. The purpose of the Mobile Dashboard is to clearly visualize the various details of the car in a user-intuitive format for the driver. This dashboard also sends the collected data of the car's metrics to the Living Timing and Historical Dashboards to be further analyzed and improve future car performance.
 
-The infomration displayed on the Mobile Dashboard is broken down into three categories. 
+The information displayed on the Mobile Dashboard is broken down into three sections. 
 
-The most far left widget displays the current speed the car is traveling at in miles per hour. The number will reflect any changes as the car speeds or slows down. It also contains the lap timing mechanism. To initiate the timer, the user will press the right start button, and then to mark the completion of a lap, they will press the left lap button. On the completion of the race, the user will reset the timer, and the data will be sent to the Live Timing Dashboard.
+The left-most widget displays the car's current speed in miles per hour. The number will reflect any changes as the car speeds or slows down. It also contains a stopwatch with lap timing capabilities. To initiate the stopwatch, the user will press the right 'Start/Stop!' button, and to mark the completion of a lap, they will press the left 'Lap' button. On the completion of the race, when the 'Reset' button is pressed, the clock is reset, and the lap data will be sent to the Live Timing Dashboard.
 
-The next widget to the right displays various metrics relating to the car. The top widget in this column is the vehicle's temperature in Celcius. The next widget down displays the battery power as a percentage. The last widget displays the connection status of the dashboard to the DAQ. To initiate a connection with DAQ, the user must press this DAQ button. 
+The widget in the center displays various metrics relating to the car. The top widget in this column shows the vehicle's temperature in Celsius. The next widget down displays the car's battery power as a percentage. The last widget indicates the current status of the connection from the Mobile Dashboard to the DAQ. To initiate a connection with DAQ, the user must press this DAQ button. 
 
-Finally, the farthest right widget is a map that tracks the car's positions during the race.
+Finally, the right-most widget shows a map of the racetrack that tracks the car's position throughout the race.
 
 The frontend of the Mobile Dashboard was implemented using React Native (with a focus on Android usage), which combines the use of JSX, HTML, Javascript, and CSS. 
 
