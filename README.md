@@ -20,30 +20,30 @@ The frontend of the Mobile Dashboard was implemented using React Native (with a 
 
 
 Terminology
-DAQ (Data Acquisition): Handles communication of data from electrical systems and sensors to driver and team.
+DAQ (Data Acquisition): Handles the communication of data from electrical systems and sensors to the driver and team.
 
-Server: A program/script that is constantly running on the internet, listening to requests from users, and taking relevant actions.
+Server: A program/script constantly running on the internet, listening to user requests, and taking relevant actions.
 
-Client: Term from the client-server architecture model. A client requests for service from the server after establishing a connection with it. Clients devices include: computers, mobile phones, tablets, etc.
+Client: Term from the client-server architecture model. A client requests service from the server after establishing a connection with it. Client devices include computers, mobile phones, tablets, etc.
 
-Database: A reliable place to store persistent data. Think of it like a big Excel spreadsheet.
+Database: A reliable place to store persistent data. Akin to a big Excel spreadsheet.
 
 HTML: Hypertext Markup Language - the language used to create webpages.
 
-CSS: Cascading Style Sheets - used to format the layout of Web pages.
+CSS: Cascading Style Sheets - used to format the layout of webpages.
 
 React: a JavaScript library for building user interfaces.
 
-JSX: a syntax extension of regular JavaScript used to write HTML CODE IN javascript. It is often used to create React elements instead of HTML.
+JSX: a syntax extension of regular JavaScript used to write HTML code in JavaScript. It is often used to create React elements instead of HTML.
 
-Component: A React feature similar to Javascript functions that allow the user to split the UI into independent, reusable pieces, and think about each piece in isolation by accepting arbitrary inputs (called “props”) and returning React elements describing what should appear on the screen.
+Component: A React feature similar to JavaScript functions that allow the user to split the UI into independent, reusable pieces. Each piece in isolation accepts arbitrary inputs (called “props”) and returns React elements describing what should appear on the screen.
 
 # How To Use
 To clone this repo, please refer to this link: https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository. 
 
 Once the repo is cloned, please ensure that you have the proper libraries and frameworks installed for React Native. Please refer to this documentation for the proper installation instructions: https://reactnative.dev/docs/environment-setup?guide=native&platform=android. 
 
-Finally, to run the dashboard on your local device, navigate to the root directory of the rep in a terminal window. Please run the command "npx expo start" and hit "a" when prompted to open the Android emulator. After the commands in both the terminal windows are run, the historical dashboard with run and lap data from the database will be loaded.
+Finally, to run the dashboard on your local device, navigate to the root directory of the repo in a terminal window. Please run the command "npx expo start" and hit "a" when prompted to open the Android emulator. After the commands in both the terminal windows are run, the historical dashboard with run and lap data from the database will be loaded.
 
 
 
@@ -51,9 +51,9 @@ Finally, to run the dashboard on your local device, navigate to the root directo
 Overview
 The Mobile Dashboard is currently implemented using React Native. We used create-react-app to create the initial empty React app. This automatically created all of the files necessary to implement a working React app so that the Dashboard could be built from this base. 
 
-App.js is the main file that runs the application. It contains instances of our other componenets that make up the widgets that are displayed on dashboard. It also contains the functionality to connect to the DAQ via websockets, collect the data from the DAQ, and send the collected DAQ data to the Live Timing Dashboard.
+App.js is the main file that runs the application. It contains instances of our other components that make up the widgets displayed on the dashboard. It also has the functionality to connect to the DAQ via websockets, collect the data from the DAQ, and send the collected DAQ data to the Live Timing Dashboard.
 
-There are three main component files, one for each "column" in the mobile application. These are all contained in the "component" folder in the root directory of this repo. All three componenets import three modules from "react-native" library: View, StyleSheet, and Dimesions. 
+There are three main component files, one for each "column" in the mobile application. These are all contained in the "component" folder in the root directory of this repo. All three components import three modules from "react-native" library: View, StyleSheet, and Dimesions. 
 
 ![Speedo](https://github.com/adityakakade432/MobileDash2023/assets/158237006/64e52df5-9f85-4192-8610-7df6b457535e)
 
