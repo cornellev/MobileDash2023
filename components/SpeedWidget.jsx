@@ -42,7 +42,7 @@ export default function SpeedWidget({readings}) {
     };
   
     if (readings) {
-      let calculatedSpeed = calcSpeed(readings['LEFT RPM'], readings['RIGHT RPM'], wheelDiameter);
+      let calculatedSpeed = calcSpeed(readings['Left_RPM'], readings['Right_RPM'], wheelDiameter);
       // Check for NaN and use 0 instead
       calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
       

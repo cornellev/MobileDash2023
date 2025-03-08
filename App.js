@@ -84,8 +84,8 @@ const App = () => {
       z_accel: data["z_accel"] ? parseFloat(data["z_accel RM"]) : null,
       gps_lat: location?.coords?.latitude,
       gps_long: location?.coords?.longitude,
-      left_rpm: data["LEFT RPM"] ? parseFloat(data["LEFT RPM"]) : null,
-      right_rpm: data["RIGHT RPM"] ? parseFloat(data["RIGHT RPM"]) : null,
+      left_rpm: data["Left_RPM"] ? parseFloat(data["Left_RPM"]) : null,
+      right_rpm: data["Right_RPM"] ? parseFloat(data["Right_RPM"]) : null,
       potent: null,
       temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
     };
