@@ -10,19 +10,24 @@ LogBox.ignoreAllLogs();
 const App = () => {
   const [websocket, setWebsocket] = useState(null);
   const [readings, setReadings] = useState({});
+  // const [speed, setSpeed] = useState(null);
   const [location, setLocation] = useState(null);
 
   useEffect(() => {
     // Request location permission
     (async () => {
+      console.log("Async entered")
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.error('Permission to access location was denied');
         return;
       }
 
+      console.log(status)
       let location = await Location.getCurrentPositionAsync({});
+      console.log(location.coords.speed)
       setLocation(location);
+      setSpeed(location.coords.speed)
     })();
 
     return () => {
@@ -76,7 +81,8 @@ const App = () => {
   };
 
   // Function to send data to server
-  const sendDataToServer = (data) => {
+  const sendDataToServer = async (data) => {
+    location = await Location.getCurrentPositionAsync({});
     setLocation(location);
 
     const postData = {
@@ -85,6 +91,7 @@ const App = () => {
       z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
       gps_lat: location?.coords?.latitude || null,
       gps_long: location?.coords?.longitude || null,
+      //speed: location?.coords?.speed || null,
       left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
       right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
       potent: null, // Assuming this is intentionally null
@@ -92,7 +99,7 @@ const App = () => {
     };
 
 
-    fetch('http://live-timing-dash.herokuapp.com/insert/uc24', {
+    fetch('http://live-timing-dash.herokuapp.com/api/insert/uc24', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -116,7 +123,7 @@ const App = () => {
           flexDirection: 'column',
         },
       ]}>
-      <SpeedWidget readings={readings}></SpeedWidget>
+      <SpeedWidget speedData={location?.coords?.speed}></SpeedWidget>
       <PowerBatteryDAQ readings={readings} onConnect={initWebSocket}></PowerBatteryDAQ>
       <MapWidget></MapWidget>
     </View>

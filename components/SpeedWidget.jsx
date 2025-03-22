@@ -25,7 +25,7 @@ const speedBarColor = interpolateColor(speed, 0, maxSpeed, startColor, endColor)
 const PI = 3.1415926536;
 const wheelDiameter = 22.42; // inches
 
-export default function SpeedWidget({readings}) {
+export default function SpeedWidget(speedData) {
   // speedometer 
   const [speed, setSpeed] = useState("0"); // initial value
   const [speedBarWidth, setSpeedBarWidth] = useState('0%');
@@ -34,17 +34,17 @@ export default function SpeedWidget({readings}) {
   const [time, setTime] = useState(0);
 
   useEffect(() => {
-    const calcSpeed = (leftRPM, rightRPM, diameter) => {
-      let avgRPM = (parseFloat(leftRPM) + parseFloat(rightRPM)) / 2;
-      let inchesPerMin = diameter * PI * avgRPM;
-      let milesPerHour = inchesPerMin * (60.0 / 63360.0);
-      return milesPerHour;
-    };
+    // const calcSpeed = (leftRPM, rightRPM, diameter) => {
+    //   let avgRPM = (parseFloat(leftRPM) + parseFloat(rightRPM)) / 2;
+    //   let inchesPerMin = diameter * PI * avgRPM;
+    //   let milesPerHour = inchesPerMin * (60.0 / 63360.0);
+    //   return milesPerHour;
+    // };
   
-    if (readings) {
-      let calculatedSpeed = calcSpeed(readings['Left_RPM'], readings['Right_RPM'], wheelDiameter);
+    if (speedData) {
+      //let calculatedSpeed = calcSpeed(readings['LEFT RPM'], readings['RIGHT RPM'], wheelDiameter);
       // Check for NaN and use 0 instead
-      calculatedSpeed = isNaN(calculatedSpeed) ? 0 : calculatedSpeed;
+      calculatedSpeed = isNaN(speedData["speedData"]) ? 0 : speedData["speedData"] * 2.237; // Convert to MPH
       
       setSpeed(calculatedSpeed.toString()); // Convert to string for the TextInput value
       
@@ -53,17 +53,10 @@ export default function SpeedWidget({readings}) {
       setSpeedBarWidth(newWidth);
       setSpeedBarColor(newColor);
     }
-  }, [readings]);
-  
-  // stopwatch implementation 
-  // const [lapTime, setLapTime] = useState(0);
-  // const [lapData, setLapData] = useState([]);
-  // const [totalTimeData, setTimeData] = useState([]);
-  // const [totalTime, setTotalTime] = useState(0);
-  // const [isStopwatchStart, setIsStopwatchStart] = useState(false);
-  // const [resetStopwatch, setResetStopwatch] = useState(false);
-  // const [lapCounter, setLapCount] = useState(0);
-  // const [lapDataB, setLapDataB] = useState([]);
+
+
+
+  }, [speedData]);
 
   const [isRunning, setIsRunning] = useState(false); // state for whether stopwatch is running
   const [startTime, setStartTime] = useState(0); // state for stopwatch's starting time
@@ -222,6 +215,7 @@ export default function SpeedWidget({readings}) {
       <View style={styles.speedCircle}>
         <Text style={styles.speedText}>{Math.round(speed)}</Text>
         <Text style={styles.speedUnitText}>mph</Text>
+        <Text style={{bottom: 15}}>opt: 7.0</Text>
       </View>
 
       {/* For stopwatch time display */}

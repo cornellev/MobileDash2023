@@ -7,6 +7,7 @@ export default function PowerBatteryDAQ({ readings, onConnect }) {
   // State to manage DAQ connection status and temperature
   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
   const [temperature, setTemperature] = useState('N/A');
+  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
     // Update connection status based on WebSocket connection
@@ -24,13 +25,17 @@ export default function PowerBatteryDAQ({ readings, onConnect }) {
   const handlePress = () => {
     if (connectionStatus === 'Disconnected') {
       onConnect();
+      setConnected(true);
+    }
+    else {
+      setConnected(false);
     }
   };
 
   return (
     <View style={styles.power}>
       {/*View for DAQ Connection Status*/}
-      <TouchableOpacity onPress={handlePress} style={styles.powersubdiv}>
+      <TouchableOpacity onPress={handlePress} style={[styles.powersubdiv, styles.daqconnected]}>
         <Text style={styles.daqtext}>DAQ</Text>
           <Text style={styles.buttonText}>{connectionStatus}</Text>
       </TouchableOpacity>
@@ -85,6 +90,14 @@ const styles = StyleSheet.create({
     shadowOpacity: 1,
     shadowRadius: 10,
     elevation: 5,
+  },
+
+  daqconnected: {
+    backgroundColor: "green"
+  },
+
+  daqdisconnected: {
+    backgroundColor: "white"
   },
 
   powertext: {
