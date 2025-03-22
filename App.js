@@ -63,15 +63,16 @@ const App = () => {
     };
 
     ws.onmessage = (event) => {
-      console.log(event.data);
-      try {
-        const myObj = JSON.parse(event.data);
-        setReadings(myObj); // Update state with new readings
-        sendDataToServer(myObj); // Send RPM data to server
-      } catch (error) {
-        console.error("Error parsing JSON:", error);
-      }
-    };
+      requestAnimationFrame(() => { // Avoids UI lag by batching updates
+        try {
+          const myObj = JSON.parse(event.data);
+          setReadings(prev => ({ ...prev, ...myObj })); // Avoids unnecessary state updates
+          sendDataToServer(myObj);
+        } catch (error) {
+          console.error("Error parsing JSON:", error);
+        }
+      });
+    };    
   };
 
   // Function to send data to server
@@ -79,16 +80,17 @@ const App = () => {
     setLocation(location);
 
     const postData = {
-      x_accel: data["x_accel"] ? parseFloat(data["x_accel RM"]) : null,
-      y_accel: data["y_accel"] ? parseFloat(data["y_accel RM"]) : null,
-      z_accel: data["z_accel"] ? parseFloat(data["z_accel RM"]) : null,
-      gps_lat: location?.coords?.latitude,
-      gps_long: location?.coords?.longitude,
-      left_rpm: data["Left_RPM"] ? parseFloat(data["Left_RPM"]) : null,
-      right_rpm: data["Right_RPM"] ? parseFloat(data["Right_RPM"]) : null,
-      potent: null,
+      x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
+      y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
+      z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
+      gps_lat: location?.coords?.latitude || null,
+      gps_long: location?.coords?.longitude || null,
+      left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
+      right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
+      potent: null, // Assuming this is intentionally null
       temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
     };
+
 
     fetch('http://live-timing-dash.herokuapp.com/insert/uc24', {
       method: 'POST',
