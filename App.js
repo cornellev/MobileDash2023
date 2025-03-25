@@ -94,7 +94,7 @@ const App = () => {
       //speed: location?.coords?.speed || null,
       left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
       right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
-      potent: null, // Assuming this is intentionally null
+      //potent: null, null just for this year since the sensor didn't work (?)
       temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
     };
 
