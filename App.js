@@ -10,32 +10,55 @@ LogBox.ignoreAllLogs();
 const App = () => {
   const [websocket, setWebsocket] = useState(null);
   const [readings, setReadings] = useState({});
-  // const [speed, setSpeed] = useState(null);
   const [location, setLocation] = useState(null);
 
   useEffect(() => {
-    // Request location permission
+    let locationSubscription = null;
+  
     (async () => {
-      console.log("Async entered")
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.error('Permission to access location was denied');
         return;
       }
-
-      console.log(status)
-      let location = await Location.getCurrentPositionAsync({});
-      console.log(location.coords.speed)
-      setLocation(location);
-      setSpeed(location.coords.speed)
+  
+      let last = Date.now();
+      locationSubscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 1000,
+          distanceInterval: 1,
+        },
+        (loc) => {
+          const now = Date.now();
+          console.log("Time since last GPS update:", now - last, "ms");
+          last = now;
+          setLocation(loc);
+          sendDataToServer({
+            x_accel: null,
+            y_accel: null,
+            z_accel: null,
+            gps_lat: loc.coords.latitude || null,
+            gps_long: loc.coords.longitude || null,
+            speed: loc.coords.speed || null,
+            left_rpm: null,
+            right_rpm: null,
+            temp: null,
+          });
+        }
+      );
     })();
-
+  
     return () => {
+      if (locationSubscription) {
+        locationSubscription.remove();
+      }
       if (websocket) {
         websocket.close();
       }
     };
-  }, []); // Empty dependency array means this effect runs once on mount
+  }, []);
+  
 
   const getReadings = () => {
     if (websocket) {
@@ -81,24 +104,19 @@ const App = () => {
   };
 
   // Function to send data to server
-  const sendDataToServer = async (data) => {
-    location = await Location.getCurrentPositionAsync({});
-    setLocation(location);
-
-    const postData = {
-      x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
-      y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
-      z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
-      gps_lat: location?.coords?.latitude || null,
-      gps_long: location?.coords?.longitude || null,
-      //speed: location?.coords?.speed || null,
-      left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
-      right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
-      //potent: null, null just for this year since the sensor didn't work (?)
-      temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
-    };
-
-
+  const sendDataToServer = (data) => {
+    // const postData = {
+    //   x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
+    //   y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
+    //   z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
+    //   gps_lat: location?.coords?.latitude || null,
+    //   gps_long: location?.coords?.longitude || null,
+    //   speed: location?.coords?.speed || null,
+    //   left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
+    //   right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
+    //   temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
+    // };
+    const postData = data;
     fetch('http://live-timing-dash.herokuapp.com/api/insert/uc24', {
       method: 'POST',
       headers: {
@@ -108,7 +126,7 @@ const App = () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Successfully sent data to Live-Timing Dash');
+      console.log('Successfully sent data to Live-Timing Dash:', data);
     })
     .catch((error) => {
       console.error('Error in sending to Live-Timing Dash:', error);
