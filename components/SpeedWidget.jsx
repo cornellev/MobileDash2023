@@ -47,6 +47,7 @@ export default function SpeedWidget(speedData) {
       calculatedSpeed = isNaN(speedData["speedData"]) ? 0 : speedData["speedData"] * 2.237; // Convert to MPH
       
       setSpeed(calculatedSpeed.toString()); // Convert to string for the TextInput value
+      //setSpeed("6")
       
       const newWidth = `${(Math.max(0, Math.min(calculatedSpeed, maxSpeed)) / maxSpeed) * 98}%`;
       const newColor = interpolateColor(calculatedSpeed, 0, maxSpeed, startColor, endColor);
@@ -57,6 +58,16 @@ export default function SpeedWidget(speedData) {
 
 
   }, [speedData]);
+  
+  // stopwatch implementation 
+  // const [lapTime, setLapTime] = useState(0);
+  // const [lapData, setLapData] = useState([]);
+  // const [totalTimeData, setTimeData] = useState([]);
+  // const [totalTime, setTotalTime] = useState(0);
+  // const [isStopwatchStart, setIsStopwatchStart] = useState(false);
+  // const [resetStopwatch, setResetStopwatch] = useState(false);
+  // const [lapCounter, setLapCount] = useState(0);
+  // const [lapDataB, setLapDataB] = useState([]);
 
   const [isRunning, setIsRunning] = useState(false); // state for whether stopwatch is running
   const [startTime, setStartTime] = useState(0); // state for stopwatch's starting time
@@ -215,7 +226,7 @@ export default function SpeedWidget(speedData) {
       <View style={styles.speedCircle}>
         <Text style={styles.speedText}>{Math.round(speed)}</Text>
         <Text style={styles.speedUnitText}>mph</Text>
-        <Text style={{bottom: 15}}>opt: 7.0</Text>
+        <Text style={{bottom: 15}}>opt: 7.2</Text>
       </View>
 
       {/* For stopwatch time display */}
@@ -313,7 +324,7 @@ const styles = StyleSheet.create({
   },
   speedCircle: {
     position: 'absolute',
-    backgroundColor: 'white',
+    backgroundColor: '#edb658',
     width: 230,
     height: 230,
     borderRadius: 250 / 2,
@@ -440,7 +451,7 @@ const styles = StyleSheet.create({
   },
   speedUnitText: {
     fontSize: 30,
-    bottom: 10,
+    bottom: 15,
   },
   unitText: {
     justifyContent: 'center',
