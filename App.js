@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, Button, LogBox } from 'react-native';
+import { StyleSheet, View, Button, LogBox } from 'react-native';
 import * as Location from 'expo-location';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
+
 import PowerBatteryDAQ from './components/PowerBatteryDAQ';
 import SpeedWidget from './components/SpeedWidget';
 import MapWidget from './components/MapWidget';
@@ -10,55 +13,33 @@ LogBox.ignoreAllLogs();
 const App = () => {
   const [websocket, setWebsocket] = useState(null);
   const [readings, setReadings] = useState({});
+  const [speed, setSpeed] = useState(null);
   const [location, setLocation] = useState(null);
+  const [logFileName, setLogFileName] = useState(null);
 
   useEffect(() => {
-    let locationSubscription = null;
-  
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
         console.error('Permission to access location was denied');
         return;
       }
-  
-      let last = Date.now();
-      locationSubscription = await Location.watchPositionAsync(
-        {
-          accuracy: Location.Accuracy.High,
-          timeInterval: 1000,
-          distanceInterval: 1,
-        },
-        (loc) => {
-          const now = Date.now();
-          console.log("Time since last GPS update:", now - last, "ms");
-          last = now;
-          setLocation(loc);
-          sendDataToServer({
-            x_accel: null,
-            y_accel: null,
-            z_accel: null,
-            gps_lat: loc.coords.latitude || null,
-            gps_long: loc.coords.longitude || null,
-            speed: loc.coords.speed || null,
-            left_rpm: null,
-            right_rpm: null,
-            temp: null,
-          });
-        }
-      );
+
+      let location = await Location.getCurrentPositionAsync({});
+      setLocation(location);
+      setSpeed(location.coords.speed);
+
+      // Create a unique log filename for this session
+      const sessionId = new Date().toISOString().replace(/[:.]/g, '-');
+      const fileName = `readings_log_${sessionId}.jsonl`;
+      setLogFileName(fileName);
+      console.log("Log file initialized:", fileName);
     })();
-  
+
     return () => {
-      if (locationSubscription) {
-        locationSubscription.remove();
-      }
-      if (websocket) {
-        websocket.close();
-      }
+      if (websocket) websocket.close();
     };
   }, []);
-  
 
   const getReadings = () => {
     if (websocket) {
@@ -69,11 +50,11 @@ const App = () => {
   const initWebSocket = () => {
     if (websocket) {
       console.log("WebSocket is already connected.");
-      return; // Exit if WebSocket is already connected
+      return;
     }
 
-    const wsScheme = "ws"; // Change to "wss" for secure WebSocket connections
-    const host = "192.168.1.242"; // Use your server's hostname or IP
+    const wsScheme = "ws";
+    const host = "192.168.1.242";
     const gateway = `${wsScheme}://${host}/ws`;
 
     console.log('Trying to open a WebSocket connection…');
@@ -87,36 +68,39 @@ const App = () => {
 
     ws.onclose = () => {
       console.log('Connection closed');
-      setWebsocket(null); // Clear WebSocket on close
+      setWebsocket(null);
     };
 
     ws.onmessage = (event) => {
-      requestAnimationFrame(() => { // Avoids UI lag by batching updates
+      requestAnimationFrame(() => {
         try {
           const myObj = JSON.parse(event.data);
-          setReadings(prev => ({ ...prev, ...myObj })); // Avoids unnecessary state updates
+          setReadings(prev => ({ ...prev, ...myObj }));
           sendDataToServer(myObj);
+          saveDataLocally(myObj);
         } catch (error) {
           console.error("Error parsing JSON:", error);
         }
       });
-    };    
+    };
   };
 
-  // Function to send data to server
   const sendDataToServer = (data) => {
-    // const postData = {
-    //   x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
-    //   y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
-    //   z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
-    //   gps_lat: location?.coords?.latitude || null,
-    //   gps_long: location?.coords?.longitude || null,
-    //   speed: location?.coords?.speed || null,
-    //   left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
-    //   right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
-    //   temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
-    // };
-    const postData = data;
+    setLocation(location);
+
+    const postData = {
+      x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
+      y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
+      z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
+      gps_lat: location?.coords?.latitude || null,
+      gps_long: location?.coords?.longitude || null,
+      speed: location?.coords?.speed || null,
+      left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
+      right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
+      potent: data["potent"] ? parseFloat(data["potent"]) : null,
+      temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
+    };
+
     fetch('http://live-timing-dash.herokuapp.com/api/insert/uc24', {
       method: 'POST',
       headers: {
@@ -126,24 +110,58 @@ const App = () => {
     })
     .then(response => response.json())
     .then(data => {
-      console.log('Successfully sent data to Live-Timing Dash:', data);
+      console.log('Successfully sent data to Live-Timing Dash');
     })
     .catch((error) => {
       console.error('Error in sending to Live-Timing Dash:', error);
     });
   };
 
+  const saveDataLocally = async (data) => {
+    if (!logFileName) return;
+
+    const timestamp = new Date().toISOString();
+    const fileUri = FileSystem.documentDirectory + logFileName;
+    const line = JSON.stringify({ timestamp, ...data }) + '\n';
+
+    try {
+      await FileSystem.writeAsStringAsync(fileUri, line, {
+        encoding: FileSystem.EncodingType.UTF8,
+        append: true,
+      });
+      console.log("Appended data locally:", line.trim());
+    } catch (error) {
+      console.error("Error writing to file:", error);
+    }
+  };
+
+  const shareLogFile = async () => {
+    if (!logFileName) {
+      console.log("No log file available yet.");
+      return;
+    }
+
+    const fileUri = FileSystem.documentDirectory + logFileName;
+
+    const fileInfo = await FileSystem.getInfoAsync(fileUri);
+    if (!fileInfo.exists) {
+      console.log("File doesn't exist yet");
+      return;
+    }
+
+    try {
+      await Sharing.shareAsync(fileUri);
+    } catch (error) {
+      console.error("Error sharing file:", error);
+    }
+  };
+
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          flexDirection: 'column',
-        },
-      ]}>
-      <SpeedWidget speedData={location?.coords?.speed}></SpeedWidget>
-      <PowerBatteryDAQ readings={readings} onConnect={initWebSocket}></PowerBatteryDAQ>
-      <MapWidget></MapWidget>
+    <View style={[styles.container, { flexDirection: 'column' }]}>
+      <SpeedWidget speedData={speed} />
+      <PowerBatteryDAQ readings={readings} onConnect={initWebSocket} />
+      <MapWidget />
+      <Button title="Share Logs" onPress={shareLogFile} />
     </View>
   );
 };
