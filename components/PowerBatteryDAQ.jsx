@@ -1,19 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from "react-native"
 
-const { width, height } = Dimensions.get("window");
+const { width } = Dimensions.get("window");
 
 export default function PowerBatteryDAQ({ readings, onConnect }) {
-  // State to manage DAQ connection status and temperature
   const [connectionStatus, setConnectionStatus] = useState('Disconnected');
   const [temperature, setTemperature] = useState('N/A');
-  const [connected, setConnected] = useState(false);
 
   useEffect(() => {
-    // Update connection status based on WebSocket connection
     if (readings && Object.keys(readings).length > 0) {
       setConnectionStatus('Connected');
-      // Assuming the JSON object has a key 'temperature' for temperature data
       if (readings.temperature) {
         setTemperature(readings.temperature);
       }
@@ -25,28 +21,28 @@ export default function PowerBatteryDAQ({ readings, onConnect }) {
   const handlePress = () => {
     if (connectionStatus === 'Disconnected') {
       onConnect();
-      setConnected(true);
-    }
-    else {
-      setConnected(false);
     }
   };
 
   return (
     <View style={styles.power}>
-      {/*View for DAQ Connection Status*/}
-      <TouchableOpacity onPress={handlePress} style={[styles.powersubdiv, styles.daqconnected]}>
+      <TouchableOpacity
+        onPress={handlePress}
+        style={[
+          styles.powersubdiv,
+          connectionStatus === 'Connected' ? styles.daqConnected : styles.daqDisconnected,
+        ]}
+      >
         <Text style={styles.daqtext}>DAQ</Text>
-          <Text style={styles.buttonText}>{connectionStatus}</Text>
       </TouchableOpacity>
 
-      {/*View for Battery Percentage (Static for now)*/}
+      {/* Battery (static) */}
       <View style={styles.powersubdiv}>
         <Text style={styles.batterytext}>75%</Text>
         <Text style={styles.unitText}>battery</Text>
       </View>
 
-      {/*View for Temperature*/}
+      {/* Temperature */}
       <View style={styles.powersubdiv}>
         <Text style={styles.powertext}>{temperature}</Text>
         <Text style={styles.unitText}>ºC</Text>
@@ -78,33 +74,29 @@ const styles = StyleSheet.create({
     width: 100,
     height: 100,
     borderRadius: 100 / 2,
-    marginTop: 15,
-    marginBottom: 15,
-    marginLeft: 10,
-    marginRight: 10,
+    marginVertical: 15,
+    marginHorizontal: 10,
     justifyContent: 'center',
     alignItems: 'center',
     transform: [{ rotate: '90deg' }],
-
     shadowColor: "#000",
     shadowOpacity: 1,
     shadowRadius: 10,
     elevation: 5,
   },
 
-  daqconnected: {
-    backgroundColor: "green"
+  daqConnected: {
+    backgroundColor: "#A3CFAD",
   },
 
-  daqdisconnected: {
-    backgroundColor: "white"
+  daqDisconnected: {
+    backgroundColor: "#ff6666",
   },
 
   powertext: {
     fontSize: 30,
     textAlign: 'center',
     fontWeight: 'bold',
-    shadowColor: "#000",
   },
 
   batterytext: {
@@ -117,10 +109,11 @@ const styles = StyleSheet.create({
     fontSize: 26,
     textAlign: 'center',
     fontWeight: 'bold',
+    color: "black", 
   },
 
   unitText: {
     fontSize: 12,
     textAlign: 'center',
   }
-})
+});

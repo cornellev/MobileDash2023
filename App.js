@@ -18,6 +18,8 @@ const App = () => {
   const [logFileName, setLogFileName] = useState(null);
 
   useEffect(() => {
+    let locationSubscription;
+
     (async () => {
       let { status } = await Location.requestForegroundPermissionsAsync();
       if (status !== 'granted') {
@@ -25,9 +27,18 @@ const App = () => {
         return;
       }
 
-      let location = await Location.getCurrentPositionAsync({});
-      setLocation(location);
-      setSpeed(location.coords.speed);
+      // Start watching position continuously
+      locationSubscription = await Location.watchPositionAsync(
+        {
+          accuracy: Location.Accuracy.High,
+          timeInterval: 1000,        // Update every 1 second
+          distanceInterval: 1,       // Or every 1 meter moved
+        },
+        (loc) => {
+          setLocation(loc);
+          setSpeed(loc.coords.speed);
+        }
+      );
 
       // Create a unique log filename for this session
       const sessionId = new Date().toISOString().replace(/[:.]/g, '-');
@@ -38,6 +49,7 @@ const App = () => {
 
     return () => {
       if (websocket) websocket.close();
+      if (locationSubscription) locationSubscription.remove(); // Clean up
     };
   }, []);
 
@@ -86,8 +98,6 @@ const App = () => {
   };
 
   const sendDataToServer = (data) => {
-    setLocation(location);
-
     const postData = {
       x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
       y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
@@ -97,6 +107,7 @@ const App = () => {
       speed: location?.coords?.speed || null,
       left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
       right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
+      steer_angle: data["steer_angle"] ? parseFloat(data["steer_angle"]) : null,
       potent: data["potent"] ? parseFloat(data["potent"]) : null,
       temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
     };
@@ -161,7 +172,7 @@ const App = () => {
       <SpeedWidget speedData={speed} />
       <PowerBatteryDAQ readings={readings} onConnect={initWebSocket} />
       <MapWidget />
-      <Button title="Share Logs" onPress={shareLogFile} />
+      <Button style={{ color: "blue" }} title="Export Data Logs" onPress={shareLogFile} />
     </View>
   );
 };
