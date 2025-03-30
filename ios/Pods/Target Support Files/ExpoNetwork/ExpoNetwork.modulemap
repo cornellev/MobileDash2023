@@ -1,0 +1,6 @@
+module ExpoNetwork {
+  umbrella header "ExpoNetwork-umbrella.h"
+
+  export *
+  module * { export * }
+}

@@ -1,0 +1,25 @@
+{
+  "name": "ExpoNetwork",
+  "version": "7.0.5",
+  "summary": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
+  "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/network/",
+  "platforms": {
+    "ios": "15.1",
+    "tvos": "15.1"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "static_framework": true,
+  "dependencies": {
+    "ExpoModulesCore": []
+  },
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES",
+    "SWIFT_COMPILATION_MODE": "wholemodule"
+  },
+  "source_files": "**/*.{h,m,swift}"
+}
