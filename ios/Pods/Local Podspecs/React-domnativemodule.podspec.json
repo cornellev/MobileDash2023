@@ -1,6 +1,6 @@
 {
   "name": "React-domnativemodule",
-  "version": "0.76.6",
+  "version": "0.76.9",
   "summary": "React Native DOM native module",
   "homepage": "https://reactnative.dev/",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.76.6"
+    "tag": "v0.76.9"
   },
   "source_files": "*.{cpp,h}",
   "header_dir": "react/nativemodule/dom",
@@ -24,7 +24,7 @@
   "dependencies": {
     "React-Core": [],
     "RCT-Folly": [
-      "2024.01.01.00"
+      "2024.10.14.00"
     ],
     "glog": [],
     "React-RCTFabric": [],

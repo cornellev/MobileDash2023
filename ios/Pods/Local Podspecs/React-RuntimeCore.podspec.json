@@ -1,6 +1,6 @@
 {
   "name": "React-RuntimeCore",
-  "version": "0.76.6",
+  "version": "0.76.9",
   "summary": "The React Native Runtime.",
   "homepage": "https://reactnative.dev/",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.76.6"
+    "tag": "v0.76.9"
   },
   "source_files": [
     "*.{cpp,h}",
@@ -30,7 +30,7 @@
   "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DFOLLY_CFG_NO_COROUTINES=1 -DFOLLY_HAVE_CLOCK_GETTIME=1 -Wno-comma -Wno-shorten-64-to-32 -Wno-documentation",
   "dependencies": {
     "RCT-Folly/Fabric": [
-      "2024.01.01.00"
+      "2024.10.14.00"
     ],
     "React-jsiexecutor": [],
     "React-cxxreact": [],

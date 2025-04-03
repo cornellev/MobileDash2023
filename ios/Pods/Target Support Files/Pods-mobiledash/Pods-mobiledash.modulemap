@@ -1,6 +1,0 @@
-module Pods_mobiledash {
-  umbrella header "Pods-mobiledash-umbrella.h"
-
-  export *
-  module * { export * }
-}

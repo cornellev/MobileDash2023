@@ -1,6 +1,6 @@
 {
   "name": "ExpoModulesCore",
-  "version": "2.2.2",
+  "version": "2.2.3",
   "summary": "The core of Expo Modules architecture",
   "description": "The core of Expo Modules architecture",
   "license": "MIT",
@@ -41,7 +41,7 @@
     "React-NativeModulesApple": [],
     "React-RCTFabric": [],
     "RCT-Folly": [
-      "2024.01.01.00"
+      "2024.10.14.00"
     ],
     "glog": [],
     "ReactCodegen": [],

@@ -1,6 +1,6 @@
 {
   "name": "fmt",
-  "version": "9.1.0",
+  "version": "11.0.2",
   "license": {
     "type": "MIT"
   },
@@ -9,7 +9,7 @@
   "authors": "The fmt contributors",
   "source": {
     "git": "https://github.com/fmtlib/fmt.git",
-    "tag": "9.1.0"
+    "tag": "11.0.2"
   },
   "pod_target_xcconfig": {
     "CLANG_CXX_LANGUAGE_STANDARD": "c++20"

@@ -1,8 +1,6 @@
 import { View, Text, StyleSheet, Dimensions, ProgressBar, TextInput, TouchableOpacity, TouchableHighlight } from "react-native"
 const { width, height } = Dimensions.get("window");
-import Svg, { Path } from 'react-native-svg';
 import React, {useState, useEffect} from 'react';
-import { Stopwatch } from 'react-native-stopwatch-timer'
 
 const interpolateColor = (speed, minSpeed, maxSpeed, startColor, endColor) => {
   // Calculate ratio of current speed within speed range
