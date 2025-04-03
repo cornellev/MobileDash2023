@@ -1,6 +1,6 @@
 {
   "name": "React-jsinspector",
-  "version": "0.76.7",
+  "version": "0.76.6",
   "summary": "-",
   "homepage": "https://reactnative.dev/",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/facebook/react-native.git",
-    "tag": "v0.76.7"
+    "tag": "v0.76.6"
   },
   "source_files": "*.{cpp,h,def}",
   "header_dir": "jsinspector-modern",
@@ -28,11 +28,11 @@
     "React-featureflags": [],
     "DoubleConversion": [],
     "React-runtimeexecutor": [
-      "0.76.7"
+      "0.76.6"
     ],
     "React-jsi": [],
     "React-perflogger": [
-      "0.76.7"
+      "0.76.6"
     ],
     "hermes-engine": []
   }

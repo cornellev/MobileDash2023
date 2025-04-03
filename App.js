@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { StyleSheet, View, Button, LogBox } from 'react-native';
 import * as Location from 'expo-location';
 import * as FileSystem from 'expo-file-system';
@@ -17,6 +17,9 @@ const App = () => {
   const [location, setLocation] = useState(null);
   const [logFileName, setLogFileName] = useState(null);
 
+  const logBufferRef = useRef([]);
+  const sendBufferRef = useRef([]);
+
   useEffect(() => {
     let locationSubscription;
 
@@ -27,12 +30,11 @@ const App = () => {
         return;
       }
 
-      // Start watching position continuously
       locationSubscription = await Location.watchPositionAsync(
         {
           accuracy: Location.Accuracy.High,
-          timeInterval: 1000,        // Update every 1 second
-          distanceInterval: 1,       // Or every 1 meter moved
+          timeInterval: 1000,
+          distanceInterval: 1,
         },
         (loc) => {
           setLocation(loc);
@@ -40,16 +42,24 @@ const App = () => {
         }
       );
 
-      // Create a unique log filename for this session
-      const sessionId = new Date().toISOString().replace(/[:.]/g, '-');
-      const fileName = `readings_log_${sessionId}.jsonl`;
-      setLogFileName(fileName);
-      console.log("Log file initialized:", fileName);
+      const oldFileUri = FileSystem.documentDirectory + 'Mobile-Dash-Log.jsonl';
+      try {
+        const info = await FileSystem.getInfoAsync(oldFileUri);
+        if (info.exists) {
+          await FileSystem.deleteAsync(oldFileUri);
+          console.log("Old log file deleted.");
+        }
+      } catch (err) {
+        console.log("Error checking or deleting old log file:", err);
+      }
+
+      setLogFileName(`Mobile-Dash-Log.jsonl`);
+      console.log("Log file initialized:", logFileName);
     })();
 
     return () => {
       if (websocket) websocket.close();
-      if (locationSubscription) locationSubscription.remove(); // Clean up
+      if (locationSubscription) locationSubscription.remove();
     };
   }, []);
 
@@ -78,18 +88,84 @@ const App = () => {
       getReadings();
     };
 
-    ws.onclose = () => {
-      console.log('Connection closed');
+    ws.onclose = (event) => {
+      console.log(`Connection closed. Code: ${event.code}, Reason: ${event.reason}`);
       setWebsocket(null);
     };
 
     ws.onmessage = (event) => {
       requestAnimationFrame(() => {
         try {
-          const myObj = JSON.parse(event.data);
-          setReadings(prev => ({ ...prev, ...myObj }));
-          sendDataToServer(myObj);
-          saveDataLocally(myObj);
+          const parsed = JSON.parse(event.data);
+          //console.log(parsed)
+
+          const unpackColumnarData = (data) => {
+            const keys = Object.keys(data);
+            const length = data[keys[0]].length;
+            const result = [];
+
+            for (let i = 0; i < length; i++) {
+              const obj = {};
+              for (const key of keys) {
+                obj[key] = data[key][i];
+              }
+              result.push(obj);
+            }
+
+            return result;
+          };
+
+          let packetArray;
+          if (Array.isArray(parsed)) {
+            packetArray = parsed;
+          } else if (
+            parsed &&
+            typeof parsed === 'object' &&
+            Object.values(parsed).every(val => Array.isArray(val)) &&
+            parsed.timestamp &&
+            Array.isArray(parsed.timestamp)
+          ) {
+            packetArray = unpackColumnarData(parsed);
+          } else {
+            packetArray = [parsed];
+          }
+
+          console.log(packetArray);
+
+          const enrichedBatch = packetArray.map((packet) => ({
+            ...packet,
+            gps_lat: location?.coords?.latitude || null,
+            gps_long: location?.coords?.longitude || null,
+            speed: location?.coords?.speed || null,
+          }));
+
+          setReadings(prev => ({
+            ...prev,
+            ...enrichedBatch[enrichedBatch.length - 1]
+          }));
+
+          enrichedBatch.forEach((entry) => {
+            const filtered = {
+              x_accel: entry.x_accel ?? null,
+              y_accel: entry.y_accel ?? null,
+              z_accel: entry.z_accel ?? null,
+              left_rpm: entry.left_rpm ?? null,
+              right_rpm: entry.right_rpm ?? null,
+              temp: entry.temp ?? null,
+              gps_lat: entry.gps_lat ?? null,
+              gps_long: entry.gps_long ?? null,
+              speed: entry.speed ?? null
+            };
+
+            sendBufferRef.current.push(filtered);
+            if (sendBufferRef.current.length >= 5) {
+              sendBatchToServer(sendBufferRef.current);
+              sendBufferRef.current = [];
+            }
+
+            saveDataLocally({ ...entry });
+          });
+
         } catch (error) {
           console.error("Error parsing JSON:", error);
         }
@@ -97,52 +173,61 @@ const App = () => {
     };
   };
 
-  const sendDataToServer = (data) => {
-    const postData = {
-      x_accel: data["x_accel"] ? parseFloat(data["x_accel"]) : null,
-      y_accel: data["y_accel"] ? parseFloat(data["y_accel"]) : null,
-      z_accel: data["z_accel"] ? parseFloat(data["z_accel"]) : null,
-      gps_lat: location?.coords?.latitude || null,
-      gps_long: location?.coords?.longitude || null,
-      speed: location?.coords?.speed || null,
-      left_rpm: data["left_rpm"] ? parseFloat(data["left_rpm"]) : null,
-      right_rpm: data["right_rpm"] ? parseFloat(data["right_rpm"]) : null,
-      steer_angle: data["steer_angle"] ? parseFloat(data["steer_angle"]) : null,
-      potent: data["potent"] ? parseFloat(data["potent"]) : null,
-      temp: data["temperature"] ? parseFloat(data["temperature"]) : null,
-    };
-
+  const sendBatchToServer = (batch) => {
     fetch('http://live-timing-dash.herokuapp.com/api/insert/uc24', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(postData),
+      body: JSON.stringify(batch),
     })
-    .then(response => response.json())
-    .then(data => {
-      console.log('Successfully sent data to Live-Timing Dash');
-    })
-    .catch((error) => {
-      console.error('Error in sending to Live-Timing Dash:', error);
-    });
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        console.log('Successfully sent batch to Live-Timing Dash.');
+      })
+      .catch((error) => {
+        console.error('Error in sending batch to Live-Timing Dash:', error);
+      });
+  };  
+
+  const saveDataLocally = (data) => {
+    const line = JSON.stringify(data);
+    logBufferRef.current.push(line);
+
+    if (logBufferRef.current.length >= 1000) {
+      flushBufferToDisk();
+    }
   };
 
-  const saveDataLocally = async (data) => {
-    if (!logFileName) return;
+  const flushBufferToDisk = async () => {
+    if (!logFileName || logBufferRef.current.length === 0) return;
 
-    const timestamp = new Date().toISOString();
     const fileUri = FileSystem.documentDirectory + logFileName;
-    const line = JSON.stringify({ timestamp, ...data }) + '\n';
+    const newContent = logBufferRef.current.join('\n') + '\n';
 
     try {
-      await FileSystem.writeAsStringAsync(fileUri, line, {
+      let existingContent = '';
+      try {
+        existingContent = await FileSystem.readAsStringAsync(fileUri);
+      } catch (err) {
+        console.log("File does not exist yet.")
+      }
+
+      const fullContent = existingContent + newContent;
+
+      await FileSystem.writeAsStringAsync(fileUri, fullContent, {
         encoding: FileSystem.EncodingType.UTF8,
-        append: true,
       });
-      console.log("Appended data locally:", line.trim());
+
+      console.log(`Manually flushed ${logBufferRef.current.length} logs to disk.`);
+      logBufferRef.current = [];
     } catch (error) {
-      console.error("Error writing to file:", error);
+      console.error("Error during manual flush:", error);
     }
   };
 
@@ -152,11 +237,12 @@ const App = () => {
       return;
     }
 
-    const fileUri = FileSystem.documentDirectory + logFileName;
+    await flushBufferToDisk();
 
+    const fileUri = FileSystem.documentDirectory + logFileName;
     const fileInfo = await FileSystem.getInfoAsync(fileUri);
     if (!fileInfo.exists) {
-      console.log("File doesn't exist yet");
+      console.log("Tried to save but file doesn't exist yet...");
       return;
     }
 
@@ -172,7 +258,7 @@ const App = () => {
       <SpeedWidget speedData={speed} />
       <PowerBatteryDAQ readings={readings} onConnect={initWebSocket} />
       <MapWidget />
-      <Button style={{ color: "blue" }} title="Export Data Logs" onPress={shareLogFile} />
+      <Button title="Export Data Logs" onPress={shareLogFile} />
     </View>
   );
 };

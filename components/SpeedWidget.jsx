@@ -118,7 +118,6 @@ export default function SpeedWidget(speedData) {
   const handleReset = () => {
     setIsRunning(false);
     sendData(0, lapData, totalTime);
-    console.log(lapData);
     setTotalTime(0);
     setStartTime(0);
     setPrevTime(0);
@@ -191,19 +190,18 @@ export default function SpeedWidget(speedData) {
     };
     console.log(JSON.stringify(postData));
   
-    fetch('http://live-timing-dash.herokuapp.com/api/v1/timing', { // Test connection to endpoint
+    fetch('http://live-timing-dash.herokuapp.com/api/v1/timing', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-      },
+      },      
       body: JSON.stringify(postData),
     })
     .then(response => {
       if (!response.ok) {
-        // Handle non-200 HTTP status codes
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      return response.text(); // Change to .text() to capture the response as a string
+      return response.json()
     })
     .then(data => {
       console.log('Response:', data);
@@ -211,12 +209,30 @@ export default function SpeedWidget(speedData) {
         const jsonData = JSON.parse(data);
         console.log('Successfully sent timer data to Live-Timing Dash:', jsonData);
       } catch (e) {
-        console.error('Error parsing JSON response:', e);
+        console.warn('Response is not JSON:', data);
       }
     })
     .catch((error) => {
       console.error('Error in sending timer data to Live-Timing Dash:', error);
     });
+
+    // const url = 'https://live-timing-dash.herokuapp.com/api/v1/timing';
+    // console.log("Posting to:", url);
+    // fetch(url, {
+    //   method: 'POST',
+    //   headers: {
+    //     'Content-Type': 'application/json',
+    //   },
+    //   body: JSON.stringify({
+    //     lap_ids: 0,
+    //     lap_times: [12.34, 11.56],
+    //     total_time: 23.9
+    //   }),
+    // })
+    // .then(res => res.text())
+    // .then(text => console.log("Response:", text))
+    // .catch(err => console.error("Fetch error:", err));
+    
   }
 
   return (

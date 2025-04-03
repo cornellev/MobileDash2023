@@ -8,12 +8,14 @@
 import ExpoModulesCore
 import Expo
 import ExpoAsset
+import ExpoBackgroundFetch
 import EXConstants
 import ExpoFileSystem
 import ExpoFont
 import ExpoKeepAwake
 import ExpoLocation
 import ExpoNetwork
+import ExpoSharing
 
 @objc(ExpoModulesProvider)
 public class ExpoModulesProvider: ModulesProvider {
@@ -21,13 +23,15 @@ public class ExpoModulesProvider: ModulesProvider {
     return [
       ExpoFetchModule.self,
       AssetModule.self,
+      BackgroundFetchModule.self,
       ConstantsModule.self,
       FileSystemModule.self,
       FileSystemNextModule.self,
       FontLoaderModule.self,
       KeepAwakeModule.self,
       LocationModule.self,
-      NetworkModule.self
+      NetworkModule.self,
+      SharingModule.self
     ]
   }
 

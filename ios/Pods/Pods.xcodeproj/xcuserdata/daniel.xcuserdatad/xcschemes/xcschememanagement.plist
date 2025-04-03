@@ -4,6 +4,11 @@
 <dict>
 	<key>SchemeUserState</key>
 	<dict>
+		<key>CocoaAsyncSocket.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>DoubleConversion.xcscheme</key>
 		<dict>
 			<key>isShown</key>
@@ -24,12 +29,27 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>EXTaskManager-ExpoTaskManager_privacy.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>EXTaskManager.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>Expo.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>ExpoAsset.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ExpoBackgroundFetch.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -65,6 +85,11 @@
 			<false/>
 		</dict>
 		<key>ExpoNetwork.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>ExpoSharing.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -379,7 +404,17 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>ReactNativeGetLocation.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>SocketRocket.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>UMAppLoader.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
@@ -419,12 +454,22 @@
 			<key>isShown</key>
 			<false/>
 		</dict>
+		<key>react-native-bg-thread.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
 		<key>react-native-maps-ReactNativeMapsPrivacy.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>
 		</dict>
 		<key>react-native-maps.xcscheme</key>
+		<dict>
+			<key>isShown</key>
+			<false/>
+		</dict>
+		<key>react-native-udp.xcscheme</key>
 		<dict>
 			<key>isShown</key>
 			<false/>

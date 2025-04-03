@@ -48,4 +48,4 @@ with_node \
   --target "/Users/daniel/MobileDash2023/ios/Pods/Target Support Files/Pods-mobiledash/ExpoModulesProvider.swift" \
   --entitlement "/Users/daniel/MobileDash2023/ios/mobiledash/mobiledash.entitlements" \
   --platform "apple" \
-  --packages "expo" "expo-asset" "expo-constants" "expo-file-system" "expo-font" "expo-keep-awake" "expo-location" "expo-network"
+  --packages "expo" "expo-asset" "expo-background-fetch" "expo-constants" "expo-file-system" "expo-font" "expo-keep-awake" "expo-location" "expo-network" "expo-sharing"
