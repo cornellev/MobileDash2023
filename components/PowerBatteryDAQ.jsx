@@ -18,9 +18,27 @@ export default function PowerBatteryDAQ({ readings, onConnect }) {
     }
   }, [readings]);
 
+  useEffect(() => {
+    let interval;
+  
+    if (connectionStatus === 'Disconnected') {
+      interval = setInterval(() => {
+        console.log('Attempting reconnection...');
+        setConnectionStatus('Connecting');
+        onConnect();
+      }, 5000);
+    }
+  
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [connectionStatus]);  
+
   const handlePress = () => {
     if (connectionStatus === 'Disconnected') {
+      setConnectionStatus('Connecting');
       onConnect();
+      setConnectionStatus('Disconnected');
     }
   };
 
@@ -30,7 +48,7 @@ export default function PowerBatteryDAQ({ readings, onConnect }) {
         onPress={handlePress}
         style={[
           styles.powersubdiv,
-          connectionStatus === 'Connected' ? styles.daqConnected : styles.daqDisconnected,
+          connectionStatus === 'Connected' ? styles.daqConnected : (connectionStatus == 'Connecting' ? styles.daqConnecting : styles.daqDisconnected)
         ]}
       >
         <Text style={styles.daqtext}>DAQ</Text>
@@ -87,6 +105,10 @@ const styles = StyleSheet.create({
 
   daqConnected: {
     backgroundColor: "#A3CFAD",
+  },
+
+  daqConnecting: {
+    backgroundColor: "#fc9d03",
   },
 
   daqDisconnected: {

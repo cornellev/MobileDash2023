@@ -2,9 +2,12 @@ apply plugin: "com.android.application"
 apply plugin: "org.jetbrains.kotlin.android"
 apply plugin: "com.facebook.react"
 
-def MAPS_API_KEY = project.hasProperty('MAPS_API_KEY') ? project.MAPS_API_KEY : ""
-
 def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
+def googleMapsApiKey = new Properties()
+googleMapsApiKey.load(new FileInputStream(rootProject.file("local.properties")))
+def apiKey = googleMapsApiKey.getProperty("googleMapsApiKey")
+
 
 /**
  * This is the configuration block to customize your React Native Android app.
@@ -90,12 +93,12 @@ android {
 
     namespace 'com.dhs263.mobiledash'
     defaultConfig {
-        resValue "string", "google_maps_api_key", MAPS_API_KEY
         applicationId 'com.dhs263.mobiledash'
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        resValue "string", "google_maps_api_key", "\"${apiKey}\""
     }
     signingConfigs {
         debug {
@@ -117,11 +120,11 @@ android {
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
             crunchPngs (findProperty('android.enablePngCrunchInReleaseBuilds')?.toBoolean() ?: true)
-                // TEMPORARY: to debug logging
+
+            // TEMPORARY: to debug logging
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
-
         }
     }
     packagingOptions {

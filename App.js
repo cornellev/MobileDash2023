@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { StyleSheet, View, Button, LogBox } from 'react-native';
+import { StyleSheet, View, Button, LogBox, Platform } from 'react-native';
 import * as Location from 'expo-location';
 import * as FileSystem from 'expo-file-system';
 import * as Sharing from 'expo-sharing';
@@ -8,17 +8,31 @@ import PowerBatteryDAQ from './components/PowerBatteryDAQ';
 import SpeedWidget from './components/SpeedWidget';
 import MapWidget from './components/MapWidget';
 
-LogBox.ignoreAllLogs();
+const MAX_LINES_PER_FILE = 2000;
+const BUFFER_THRESHOLD = 100;
+const BATCH_LINES_PER_FLUSH = 500;
 
 const App = () => {
   const [websocket, setWebsocket] = useState(null);
   const [readings, setReadings] = useState({});
-  const [speed, setSpeed] = useState(null);
   const [location, setLocation] = useState(null);
-  const [logFileName, setLogFileName] = useState(null);
 
-  const logBufferRef = useRef([]);
+  const startupID = Math.random().toString(36).substring(2, 12);
+
   const sendBufferRef = useRef([]);
+  const dataBufferRef = useRef([]);
+
+  const logChunkRef = useRef(0);
+  const dataChunkRef = useRef(0);
+  const dataLineCountRef = useRef(0);
+
+  const batchedLineBufferRef = useRef('');
+  const batchedLineCountRef = useRef(0);  
+
+
+  useEffect(() => {
+    logToFile(`✅ Release build loaded with startupID: ${startupID}`);
+  }, []);
 
   useEffect(() => {
     let locationSubscription;
@@ -38,30 +52,106 @@ const App = () => {
         },
         (loc) => {
           setLocation(loc);
-          setSpeed(loc.coords.speed);
         }
       );
-
-      const oldFileUri = FileSystem.documentDirectory + 'Mobile-Dash-Log.jsonl';
-      try {
-        const info = await FileSystem.getInfoAsync(oldFileUri);
-        if (info.exists) {
-          await FileSystem.deleteAsync(oldFileUri);
-          console.log("Old log file deleted.");
-        }
-      } catch (err) {
-        console.log("Error checking or deleting old log file:", err);
-      }
-
-      setLogFileName(`Mobile-Dash-Log.jsonl`);
-      console.log("Log file initialized:", logFileName);
     })();
 
     return () => {
       if (websocket) websocket.close();
       if (locationSubscription) locationSubscription.remove();
     };
-  }, []);
+  }, [websocket]);
+
+  const getCurrentLogFilename = () => `${startupID}-${logChunkRef.current}-log.txt`;
+  const getCurrentDataFilename = () => `${startupID}-${dataChunkRef.current}-data.jsonl`;
+
+  const flushDataBuffer = async () => {
+    if (dataBufferRef.current.length === 0) return;
+  
+    const linesToFlush = dataBufferRef.current.splice(0, BATCH_LINES_PER_FLUSH);
+    const batch = linesToFlush.join('\n') + '\n';
+  
+    batchedLineBufferRef.current += batch;
+    batchedLineCountRef.current += linesToFlush.length;
+  
+    // 👉 PREEMPTIVELY ROTATE if the next flush will exceed the limit
+    if (dataLineCountRef.current + batchedLineCountRef.current >= MAX_LINES_PER_FILE) {
+      dataChunkRef.current += 1;
+      dataLineCountRef.current = 0;
+    }
+  
+    const fileUri = FileSystem.documentDirectory + getCurrentData
+    try {
+      let existingContent = '';
+      try {
+        existingContent = await FileSystem.readAsStringAsync(fileUri);
+      } catch (err) {
+        // File might not exist yet — that’s fine
+      }
+  
+      const fullContent = existingContent + batchedLineBufferRef.current;
+  
+      await FileSystem.writeAsStringAsync(fileUri, fullContent, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+  
+      dataLineCountRef.current += batchedLineCountRef.current;
+  
+      batchedLineBufferRef.current = '';
+      batchedLineCountRef.current = 0;
+    } catch (err) {
+      console.error('❌ Failed to safely write data buffer:', err);
+    }
+  };
+  
+  
+
+
+  const logToFile = async (message) => {
+    console.log(message);
+    const line = `${new Date().toISOString()} ${typeof message === 'string' ? message : JSON.stringify(message)}\n`;
+    const fileUri = FileSystem.documentDirectory + getCurrentLogFilename();
+
+    try {
+      let existingContent = '';
+      try {
+        existingContent = await FileSystem.readAsStringAsync(fileUri);
+      } catch (err) {
+        // File might not exist yet — that's fine
+      }
+
+      const fullContent = existingContent + line;
+      await FileSystem.writeAsStringAsync(fileUri, fullContent, {
+        encoding: FileSystem.EncodingType.UTF8,
+      });
+    } catch (err) {
+      console.error('❌ Failed to write log to file:', err);
+    }
+  };
+
+  const saveDataLocally = (data) => {
+    const line = JSON.stringify(data);
+    dataBufferRef.current.push(line);
+    if (dataBufferRef.current.length >= BUFFER_THRESHOLD) {
+      flushDataBuffer();
+    }
+  };
+
+  const exportAllLogs = async () => {
+    const files = await FileSystem.readDirectoryAsync(FileSystem.documentDirectory);
+    const relevantFiles = files.filter(f =>
+      (f.startsWith(startupID))
+    );
+
+    for (const file of relevantFiles) {
+      const fileUri = FileSystem.documentDirectory + file;
+      try {
+        await Sharing.shareAsync(fileUri);
+      } catch (err) {
+        console.error(`❌ Failed to share ${file}:`, err);
+      }
+    }
+  };
 
   const getReadings = () => {
     if (websocket) {
@@ -71,7 +161,7 @@ const App = () => {
 
   const initWebSocket = () => {
     if (websocket) {
-      console.log("WebSocket is already connected.");
+      logToFile("WebSocket is already connected.");
       return;
     }
 
@@ -79,17 +169,17 @@ const App = () => {
     const host = "192.168.1.242";
     const gateway = `${wsScheme}://${host}/ws`;
 
-    console.log('Trying to open a WebSocket connection…');
+    logToFile('Trying to open a WebSocket connection…');
     const ws = new WebSocket(gateway);
 
     ws.onopen = () => {
-      console.log('Connection opened');
+      logToFile('Connection opened');
       setWebsocket(ws);
       getReadings();
     };
 
     ws.onclose = (event) => {
-      console.log(`Connection closed. Code: ${event.code}, Reason: ${event.reason}`);
+      logToFile(`Connection closed. Code: ${event.code}, Reason: ${event.reason}`);
       setWebsocket(null);
     };
 
@@ -97,7 +187,6 @@ const App = () => {
       requestAnimationFrame(() => {
         try {
           const parsed = JSON.parse(event.data);
-          //console.log(parsed)
 
           const unpackColumnarData = (data) => {
             const keys = Object.keys(data);
@@ -130,7 +219,7 @@ const App = () => {
             packetArray = [parsed];
           }
 
-          console.log(packetArray);
+          //logToFile('Received WebSocket data batch.');
 
           const enrichedBatch = packetArray.map((packet) => ({
             ...packet,
@@ -158,12 +247,12 @@ const App = () => {
             };
 
             sendBufferRef.current.push(filtered);
-            if (sendBufferRef.current.length >= 5) {
-              sendBatchToServer(sendBufferRef.current);
+            if (sendBufferRef.current.length >= BUFFER_THRESHOLD) {
+              sendBatchToServer(sendBufferRef.current[sendBufferRef.current.length - 1]);
               sendBufferRef.current = [];
             }
 
-            saveDataLocally({ ...entry });
+            saveDataLocally(entry);
           });
 
         } catch (error) {
@@ -174,6 +263,8 @@ const App = () => {
   };
 
   const sendBatchToServer = (batch) => {
+    //logToFile(batch);
+
     fetch('http://live-timing-dash.herokuapp.com/api/insert/uc24', {
       method: 'POST',
       headers: {
@@ -183,82 +274,24 @@ const App = () => {
     })
       .then(response => {
         if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
+          logToFile(`HTTP error! Status: ${response.status}`);
         }
         return response.json();
       })
       .then(data => {
-        console.log('Successfully sent batch to Live-Timing Dash.');
+        //logToFile('Successfully sent batch to Live-Timing Dash.');
       })
       .catch((error) => {
-        console.error('Error in sending batch to Live-Timing Dash:', error);
+        logToFile(`Error in sending batch to Live-Timing Dash: ${error}`);
       });
-  };  
-
-  const saveDataLocally = (data) => {
-    const line = JSON.stringify(data);
-    logBufferRef.current.push(line);
-
-    if (logBufferRef.current.length >= 1000) {
-      flushBufferToDisk();
-    }
-  };
-
-  const flushBufferToDisk = async () => {
-    if (!logFileName || logBufferRef.current.length === 0) return;
-
-    const fileUri = FileSystem.documentDirectory + logFileName;
-    const newContent = logBufferRef.current.join('\n') + '\n';
-
-    try {
-      let existingContent = '';
-      try {
-        existingContent = await FileSystem.readAsStringAsync(fileUri);
-      } catch (err) {
-        console.log("File does not exist yet.")
-      }
-
-      const fullContent = existingContent + newContent;
-
-      await FileSystem.writeAsStringAsync(fileUri, fullContent, {
-        encoding: FileSystem.EncodingType.UTF8,
-      });
-
-      console.log(`Manually flushed ${logBufferRef.current.length} logs to disk.`);
-      logBufferRef.current = [];
-    } catch (error) {
-      console.error("Error during manual flush:", error);
-    }
-  };
-
-  const shareLogFile = async () => {
-    if (!logFileName) {
-      console.log("No log file available yet.");
-      return;
-    }
-
-    await flushBufferToDisk();
-
-    const fileUri = FileSystem.documentDirectory + logFileName;
-    const fileInfo = await FileSystem.getInfoAsync(fileUri);
-    if (!fileInfo.exists) {
-      console.log("Tried to save but file doesn't exist yet...");
-      return;
-    }
-
-    try {
-      await Sharing.shareAsync(fileUri);
-    } catch (error) {
-      console.error("Error sharing file:", error);
-    }
   };
 
   return (
     <View style={[styles.container, { flexDirection: 'column' }]}>
-      <SpeedWidget speedData={speed} />
+      <SpeedWidget speedData={typeof readings.left_rpm === 'number' ? readings.left_rpm * 0.00090506 : null} />
       <PowerBatteryDAQ readings={readings} onConnect={initWebSocket} />
       <MapWidget />
-      <Button title="Export Data Logs" onPress={shareLogFile} />
+      <Button title="Export All Logs" onPress={exportAllLogs} />
     </View>
   );
 };
