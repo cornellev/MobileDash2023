@@ -20,6 +20,8 @@ The competition-readyish version of the Mobile Dashboard introduces robust local
 - **Batch Upload to Server:**  
   Data is batched and uploaded to the Live Timing Dashboard endpoint (`/api/insert/uc24`) when the buffer reaches a preset threshold. If the connection is temporarily lost, the buffer will persist and retry on subsequent flushes.
 
+<img width="975" alt="Screenshot 2025-05-09 at 10 13 24 AM" src="https://github.com/user-attachments/assets/759c5c05-d155-4ac9-b6a2-5839be2b697f" />
+
 
 # Summary
 System Description 
