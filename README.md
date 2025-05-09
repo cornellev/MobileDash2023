@@ -1,6 +1,25 @@
-## MobileDash2023 | SP 2024
+## MobileDash2023 | SP 2025
 
 Authors: Aditya Kakade, Katherine Chang Wu, Daniel Sorokin, Julia Lau
+
+## COMP VERSION
+
+The competition-readyish version of the Mobile Dashboard introduces robust local logging and data upload features designed to ensure performance monitoring and debugging capabilities even in low-connectivity environments.
+
+### Key Enhancements
+
+- **Local Data Logging:**  
+  The dashboard now saves all incoming DAQ and GPS data directly to the Android device's internal file system. Data is stored in chunked `.jsonl` files (telemetry) and `.txt` files (logs), named by session startup ID. Each data file is capped at 2000 lines to avoid excessive memory usage.
+
+- **Export Capability:**  
+  Users can export all locally stored logs via the "Export All Logs" button, which shares files using the system-native file sharing interface. This is useful for offline analysis or backup during competitions.
+
+- **Phone Telemetery (GPS) Integration:**  
+  The app actively tracks GPS coordinates to collect telemetry data, `gps_lat`, `gps_long`, and `speed`, using the Expo Location API. These are bundled with DAQ data and logged in real time.
+
+- **Batch Upload to Server:**  
+  Data is batched and uploaded to the Live Timing Dashboard endpoint (`/api/insert/uc24`) when the buffer reaches a preset threshold. If the connection is temporarily lost, the buffer will persist and retry on subsequent flushes.
+
 
 # Summary
 System Description 
