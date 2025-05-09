@@ -22,6 +22,10 @@ The competition-readyish version of the Mobile Dashboard introduces robust local
 
 <img width="975" alt="Screenshot 2025-05-09 at 10 13 24 AM" src="https://github.com/user-attachments/assets/759c5c05-d155-4ac9-b6a2-5839be2b697f" />
 
+### Limitations and Future Development
+
+While the current software architecture is robust in theory, we encountered performance bottlenecks due to limited hardware. Our $40 Android phone was unable to consistently handle the volume of data and processing demands during peak use. As a result, we plan to transition a similar version of this architecture to run on a dedicated on-vehicle computer, such as a Raspberry Pi. This will allow for better performance, persistent power, and more stable data handling in future iterations.
+
 
 # Summary
 System Description 
